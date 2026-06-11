@@ -327,6 +327,7 @@
   <button class="tab" onclick="showTab('pinout')">Tabel Koneksi Pin</button>
   <button class="tab" onclick="showTab('bom')">BOM (Daftar Komponen)</button>
   <button class="tab" onclick="showTab('notes')">Catatan Teknis</button>
+  <button class="tab" onclick="showTab('bisnis')" style="color:#00d9a6;border-bottom-color:transparent">🏪 Alur Bisnis</button>
 </div>
 
 <!-- TAB 1: Block Diagram -->
@@ -891,6 +892,1023 @@
   </div>
 </div>
 
+<!-- TAB 6: Business Flow -->
+<div id="tab-bisnis" class="tab-panel">
+
+<style>
+/* ===================== BISNIS TAB STYLES ===================== */
+.biz-section { margin-bottom: 48px; }
+.biz-title {
+  font-family: sans-serif; font-size: 13px; font-weight: 700;
+  color: #00d9a6; letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 18px; padding-bottom: 8px;
+  border-bottom: 1px solid #21262d;
+}
+
+/* ---- SOUNDBOX 3D ---- */
+.soundbox-stage {
+  display: flex; justify-content: center; align-items: center;
+  gap: 48px; flex-wrap: wrap; margin-bottom: 32px;
+}
+.soundbox-wrap { position: relative; }
+.soundbox-body {
+  width: 130px; height: 170px;
+  background: linear-gradient(145deg, #e8edf2 0%, #c8d0d8 40%, #b0bbc5 100%);
+  border-radius: 14px 14px 10px 10px;
+  position: relative; box-shadow: 8px 12px 28px #00000088, inset 0 1px 2px #ffffffaa;
+  display: flex; flex-direction: column; align-items: center;
+}
+.soundbox-top-bar {
+  width: 100%; height: 28px;
+  background: linear-gradient(90deg, #1a5ccc, #1a8cff);
+  border-radius: 14px 14px 0 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.soundbox-top-bar span { font-size: 9px; font-weight: bold; color: #fff; letter-spacing: 2px; font-family: sans-serif; }
+.qr-area {
+  width: 88px; height: 88px; background: #fff;
+  margin: 10px auto 6px;
+  border-radius: 6px; padding: 5px;
+  box-shadow: 0 2px 6px #00000033;
+  display: flex; align-items: center; justify-content: center;
+}
+.soundbox-merchant-name {
+  font-size: 8px; font-family: sans-serif; color: #334; font-weight: bold;
+  text-align: center; line-height: 1.3; margin-bottom: 4px; padding: 0 6px;
+}
+.soundbox-speaker-grill {
+  display: flex; gap: 3px; justify-content: center; margin: 2px 0 4px;
+}
+.grill-dot {
+  width: 4px; height: 4px; background: #8899aa;
+  border-radius: 50%;
+}
+.soundbox-leds {
+  display: flex; gap: 6px; margin-bottom: 6px;
+}
+.led-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+.led-green { background: #00ff88; color: #00ff88; }
+.led-red   { background: #ff4444; color: #ff4444; opacity: 0.3; }
+.led-yellow{ background: #ffcc00; color: #ffcc00; opacity: 0.3; }
+.soundbox-base {
+  width: 150px; height: 18px;
+  background: linear-gradient(180deg, #b0bbc5, #8899aa);
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 6px 12px #00000055;
+}
+.soundbox-logo-bottom {
+  position: absolute; bottom: 22px; left: 0; right: 0;
+  text-align: center; font-size: 8px; font-family: sans-serif;
+  color: #1a8cff; font-weight: bold; letter-spacing: 1px;
+}
+.soundbox-buttons {
+  position: absolute; right: -14px; top: 55px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.hw-btn {
+  width: 10px; height: 22px;
+  background: linear-gradient(180deg, #c8d0d8, #a0aab5);
+  border-radius: 3px;
+  box-shadow: 2px 2px 4px #00000044;
+}
+/* LED pulse animation */
+@keyframes led-pulse {
+  0%,100% { box-shadow: 0 0 6px #00ff88, 0 0 12px #00ff88; }
+  50%      { box-shadow: 0 0 3px #00ff88; }
+}
+.led-green.pulsing { animation: led-pulse 1.4s ease-in-out infinite; }
+
+/* Sound wave animation */
+.sound-waves {
+  position: absolute; left: -50px; top: 50%;
+  transform: translateY(-50%);
+}
+.wave {
+  position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  border: 2px solid #00d9a6;
+  border-radius: 50%; opacity: 0;
+  animation: wave-out 2s ease-out infinite;
+}
+.wave:nth-child(1) { width: 24px; height: 24px; margin-left: -12px; margin-top: -12px; animation-delay: 0s; }
+.wave:nth-child(2) { width: 44px; height: 44px; margin-left: -22px; margin-top: -22px; animation-delay: 0.4s; }
+.wave:nth-child(3) { width: 64px; height: 64px; margin-left: -32px; margin-top: -32px; animation-delay: 0.8s; }
+@keyframes wave-out {
+  0%   { opacity: 0.9; transform: translateY(-50%) scale(0.5); }
+  100% { opacity: 0;   transform: translateY(-50%) scale(1.3); }
+}
+
+/* soundbox label */
+.soundbox-label {
+  font-family: sans-serif; font-size: 11px; color: #8b949e;
+  text-align: center; margin-top: 10px; line-height: 1.5;
+}
+.soundbox-label strong { color: #e6edf3; display: block; font-size: 13px; margin-bottom: 2px; }
+
+/* ---- MOBILE PHONE ---- */
+.phone-wrap { position: relative; }
+.phone-body {
+  width: 160px; height: 300px;
+  background: linear-gradient(160deg, #1a1f2e 0%, #0d1117 100%);
+  border-radius: 28px;
+  border: 2px solid #30363d;
+  box-shadow: 10px 14px 32px #00000099, inset 0 1px 1px #ffffff11;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.phone-notch {
+  width: 60px; height: 18px;
+  background: #0d1117;
+  border-radius: 0 0 14px 14px;
+  align-self: center; z-index: 2; flex-shrink: 0;
+}
+.phone-screen {
+  flex: 1; background: #fff;
+  margin: 0 3px 3px 3px;
+  border-radius: 0 0 24px 24px;
+  overflow: hidden; position: relative;
+}
+.phone-btn-home {
+  width: 36px; height: 5px;
+  background: #30363d; border-radius: 3px;
+  align-self: center; margin: 4px 0 6px;
+}
+
+/* App Screen Content */
+.app-screen {
+  width: 100%; height: 100%;
+  font-family: sans-serif;
+  display: none; flex-direction: column;
+  position: absolute; top: 0; left: 0;
+}
+.app-screen.active-screen { display: flex; }
+
+.app-statusbar {
+  background: #1a8cff; color: #fff;
+  font-size: 7px; padding: 3px 8px;
+  display: flex; justify-content: space-between;
+}
+.app-header {
+  background: #1a8cff; color: #fff;
+  padding: 6px 8px; font-size: 9px; font-weight: bold;
+  display: flex; align-items: center; gap: 4px;
+}
+.app-body { flex: 1; background: #f4f7fb; padding: 6px; overflow: hidden; }
+.app-footer {
+  background: #fff; border-top: 1px solid #eee;
+  display: flex; justify-content: space-around;
+  padding: 4px 0;
+}
+.app-nav-item {
+  display: flex; flex-direction: column; align-items: center;
+  font-size: 6px; color: #aaa; gap: 1px;
+}
+.app-nav-item.active-nav { color: #1a8cff; }
+.nav-icon { font-size: 10px; }
+
+/* Dashboard screen */
+.dash-balance {
+  background: linear-gradient(135deg, #1a8cff, #0066dd);
+  color: #fff; border-radius: 8px; padding: 8px;
+  margin-bottom: 6px; text-align: center;
+}
+.dash-balance .bal-label { font-size: 6px; opacity: 0.8; }
+.dash-balance .bal-amount { font-size: 14px; font-weight: bold; }
+.dash-balance .bal-sub { font-size: 6px; opacity: 0.7; }
+.dash-quick { display: flex; gap: 4px; margin-bottom: 6px; }
+.dash-quick-btn {
+  flex: 1; background: #fff; border-radius: 6px;
+  padding: 5px 2px; text-align: center; font-size: 6px; color: #334;
+  box-shadow: 0 1px 4px #00000015;
+}
+.dash-quick-btn .qbtn-icon { font-size: 10px; margin-bottom: 1px; }
+.txn-list-title { font-size: 7px; color: #666; margin-bottom: 4px; font-weight: bold; }
+.txn-item {
+  background: #fff; border-radius: 5px; padding: 4px 5px;
+  margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 1px 3px #00000010;
+}
+.txn-left .txn-name { font-size: 7px; color: #334; font-weight: bold; }
+.txn-left .txn-time { font-size: 6px; color: #999; }
+.txn-amount { font-size: 8px; font-weight: bold; color: #00aa55; }
+
+/* Notification screen overlay */
+.notif-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: #00000088; display: flex; align-items: flex-start;
+  justify-content: center; padding-top: 20px; z-index: 10;
+  opacity: 0; transition: opacity 0.4s;
+}
+.notif-overlay.show-notif { opacity: 1; }
+.notif-card {
+  background: #fff; border-radius: 10px; padding: 8px 10px;
+  width: 130px; box-shadow: 0 4px 16px #00000033;
+  transform: translateY(-20px); transition: transform 0.4s;
+}
+.notif-overlay.show-notif .notif-card { transform: translateY(0); }
+.notif-header { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.notif-header .n-logo { font-size: 8px; font-weight: bold; color: #1a8cff; }
+.notif-header .n-time { font-size: 6px; color: #999; margin-left: auto; }
+.notif-title { font-size: 8px; font-weight: bold; color: #334; }
+.notif-body { font-size: 7px; color: #555; margin-top: 2px; line-height: 1.4; }
+.notif-amount { font-size: 14px; font-weight: bold; color: #00aa55; text-align: center; margin: 4px 0; }
+
+/* ---- FLOW DIAGRAM ---- */
+.flow-container {
+  position: relative; overflow-x: auto;
+  padding: 20px 0;
+}
+.flow-steps {
+  display: flex; align-items: flex-start; gap: 0;
+  min-width: 900px; padding: 0 20px;
+}
+.flow-step {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; flex: 1;
+}
+.flow-node {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; position: relative; z-index: 2;
+  border: 2px solid; cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.flow-node:hover { transform: scale(1.08); }
+.flow-icon { font-size: 22px; }
+.flow-num {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  font-size: 9px; font-weight: bold; display: flex;
+  align-items: center; justify-content: center;
+  font-family: sans-serif;
+}
+.flow-label {
+  font-family: sans-serif; font-size: 10px; color: #e6edf3;
+  text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.3;
+  max-width: 90px;
+}
+.flow-sublabel {
+  font-family: sans-serif; font-size: 9px; color: #8b949e;
+  text-align: center; max-width: 90px; line-height: 1.3; margin-top: 2px;
+}
+.flow-arrow {
+  flex: 1; height: 2px; background: #30363d;
+  margin-top: 39px; position: relative; min-width: 20px;
+  max-width: 60px;
+}
+.flow-arrow::after {
+  content: ''; position: absolute; right: -6px; top: -4px;
+  border: 5px solid transparent;
+  border-left-color: #30363d;
+}
+.flow-arrow.active-arrow { background: #00d9a6; }
+.flow-arrow.active-arrow::after { border-left-color: #00d9a6; }
+
+/* Node color themes */
+.node-blue  { background: #0d2037; border-color: #1a8cff; box-shadow: 0 0 0 #1a8cff; }
+.node-green { background: #0d2e1a; border-color: #00d9a6; box-shadow: 0 0 0 #00d9a6; }
+.node-orange{ background: #2a1800; border-color: #f0a500; box-shadow: 0 0 0 #f0a500; }
+.node-purple{ background: #1a0d2e; border-color: #aa55ff; box-shadow: 0 0 0 #aa55ff; }
+.node-red   { background: #2e0d0d; border-color: #ff5555; box-shadow: 0 0 0 #ff5555; }
+.flow-num-blue   { background: #1a8cff; color: #fff; }
+.flow-num-green  { background: #00d9a6; color: #000; }
+.flow-num-orange { background: #f0a500; color: #000; }
+.flow-num-purple { background: #aa55ff; color: #fff; }
+.flow-num-red    { background: #ff5555; color: #fff; }
+
+@keyframes node-glow {
+  0%,100% { box-shadow: 0 0 8px currentColor; }
+  50%      { box-shadow: 0 0 22px currentColor, 0 0 40px currentColor; }
+}
+.node-active { animation: node-glow 1.5s ease-in-out infinite; }
+
+/* ---- DEMO ANIMATION ---- */
+.demo-stage {
+  display: flex; align-items: center; justify-content: center;
+  gap: 32px; flex-wrap: wrap;
+  background: #0d1117; border: 1px solid #21262d;
+  border-radius: 12px; padding: 32px 24px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+.demo-label {
+  font-family: sans-serif; font-size: 11px; color: #8b949e;
+  text-align: center; margin-top: 8px;
+}
+.demo-label strong { color: #e6edf3; display: block; }
+
+/* Data packet animation */
+.data-packet {
+  position: absolute; width: 12px; height: 12px;
+  background: #1a8cff; border-radius: 50%;
+  opacity: 0;
+}
+@keyframes fly-right {
+  0%   { left: 5%;  opacity: 1; transform: scale(1); }
+  100% { left: 95%; opacity: 0; transform: scale(0.5); }
+}
+@keyframes fly-down {
+  0%   { top: 20%; opacity: 1; }
+  100% { top: 80%; opacity: 0; }
+}
+.packet-flying { animation: fly-right 1.2s ease-in-out forwards; }
+.packet-flying-down { animation: fly-down 0.8s ease-in-out forwards; }
+
+/* Payment Gateway box */
+.gateway-box {
+  background: #1a1020; border: 1px solid #aa55ff;
+  border-radius: 8px; padding: 12px 16px; text-align: center;
+}
+.gateway-box .gw-title { font-size: 9px; color: #aa55ff; font-weight: bold; font-family: sans-serif; }
+.gateway-box .gw-name  { font-size: 11px; color: #e6edf3; font-family: sans-serif; }
+
+.server-box {
+  background: #0d2037; border: 1px solid #1a8cff;
+  border-radius: 8px; padding: 12px 16px; text-align: center;
+}
+.server-box .sv-title { font-size: 9px; color: #1a8cff; font-weight: bold; font-family: sans-serif; }
+.server-box .sv-name  { font-size: 11px; color: #e6edf3; font-family: sans-serif; }
+
+/* Connectivity lines in demo */
+.conn-line {
+  display: flex; align-items: center; flex-direction: column; gap: 4px;
+}
+.conn-line-h {
+  height: 2px; width: 50px; background: #21262d; position: relative;
+  overflow: visible;
+}
+.conn-line-label { font-size: 8px; color: #8b949e; font-family: sans-serif; }
+
+/* Play button */
+.play-btn {
+  background: linear-gradient(135deg, #1a8cff, #0066dd);
+  color: #fff; border: none; border-radius: 8px;
+  padding: 10px 24px; font-size: 13px; font-family: sans-serif;
+  font-weight: bold; cursor: pointer; display: block;
+  margin: 0 auto 16px; transition: transform 0.2s;
+}
+.play-btn:hover { transform: scale(1.05); }
+
+/* Step detail card */
+.step-detail {
+  background: #161b22; border: 1px solid #21262d;
+  border-radius: 8px; padding: 16px; margin-top: 16px;
+}
+.step-detail-title {
+  font-family: sans-serif; font-size: 13px; font-weight: bold;
+  color: #00d9a6; margin-bottom: 8px;
+}
+.step-detail-body {
+  font-family: sans-serif; font-size: 12px; color: #8b949e;
+  line-height: 1.7;
+}
+.step-detail-body strong { color: #e6edf3; }
+
+/* Dashboard mockup */
+.dashboard-wrap {
+  background: #fff; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 4px 24px #00000066; width: 100%; max-width: 480px;
+}
+.db-topbar {
+  background: linear-gradient(90deg, #1a5ccc, #1a8cff);
+  color: #fff; padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.db-topbar .db-logo { font-size: 12px; font-weight: bold; font-family: sans-serif; }
+.db-topbar .db-merchant { font-size: 10px; opacity: 0.85; font-family: sans-serif; }
+.db-topbar .db-status {
+  font-size: 9px; background: #00d9a633; padding: 2px 8px;
+  border-radius: 10px; color: #00d9a6; font-family: sans-serif;
+}
+.db-body { padding: 12px; background: #f4f7fb; }
+.db-cards { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.db-card {
+  flex: 1; min-width: 100px; background: #fff; border-radius: 8px;
+  padding: 10px; box-shadow: 0 1px 6px #00000010;
+}
+.db-card .dc-label { font-size: 9px; color: #888; font-family: sans-serif; }
+.db-card .dc-value { font-size: 16px; font-weight: bold; color: #334; font-family: sans-serif; }
+.db-card .dc-sub   { font-size: 9px; color: #00aa55; font-family: sans-serif; }
+.db-section-title {
+  font-family: sans-serif; font-size: 11px; font-weight: bold;
+  color: #334; margin-bottom: 8px;
+}
+.db-txn-item {
+  background: #fff; border-radius: 6px; padding: 8px 10px;
+  margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 1px 4px #00000008;
+}
+.db-txn-left .db-txn-name { font-size: 11px; color: #334; font-weight: bold; font-family: sans-serif; }
+.db-txn-left .db-txn-time { font-size: 9px; color: #999; font-family: sans-serif; }
+.db-txn-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 10px;
+  font-family: sans-serif; font-weight: bold;
+}
+.badge-success { background: #e6faf2; color: #00aa55; }
+.db-txn-amount { font-size: 13px; font-weight: bold; color: #00aa55; font-family: sans-serif; }
+.db-soundbox-status {
+  background: #fff; border-radius: 8px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 1px 4px #00000010; margin-bottom: 10px;
+}
+.db-sb-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #00d9a6; box-shadow: 0 0 6px #00d9a6;
+  animation: led-pulse 1.4s infinite; flex-shrink: 0;
+}
+.db-sb-info { font-family: sans-serif; }
+.db-sb-name { font-size: 11px; font-weight: bold; color: #334; }
+.db-sb-sub  { font-size: 9px; color: #888; }
+
+/* Revenue chart mini */
+.mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 50px; padding: 0 4px; }
+.bar-col { flex: 1; border-radius: 3px 3px 0 0; background: #1a8cff; opacity: 0.7; transition: opacity 0.3s; }
+.bar-col:hover { opacity: 1; }
+
+/* Failover demo */
+.failover-scenario {
+  background: #1a0808; border: 1px solid #ff5555;
+  border-radius: 8px; padding: 14px; margin-bottom: 16px;
+}
+.failover-title { font-family: sans-serif; font-size: 12px; color: #ff5555; font-weight: bold; margin-bottom: 8px; }
+.failover-steps { display: flex; flex-direction: column; gap: 6px; }
+.fs-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-family: sans-serif; font-size: 11px; color: #8b949e;
+}
+.fs-num {
+  width: 18px; height: 18px; border-radius: 50%; background: #ff5555;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: bold; flex-shrink: 0; margin-top: 1px;
+}
+</style>
+
+<!-- ======= SOUNDBOX VISUAL ======= -->
+<div class="biz-section">
+  <div class="biz-title">🔊 Ilustrasi Alat Soundbox NyamPay</div>
+  <div class="soundbox-stage">
+
+    <!-- Soundbox V1 -->
+    <div>
+      <div class="soundbox-wrap">
+        <div class="sound-waves">
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+        </div>
+        <div class="soundbox-body">
+          <div class="soundbox-top-bar"><span>NYAMPAY</span></div>
+          <div class="qr-area">
+            <svg width="78" height="78" viewBox="0 0 78 78">
+              <!-- QR pattern simulation -->
+              <rect width="78" height="78" fill="#fff"/>
+              <!-- Top-left finder -->
+              <rect x="4" y="4" width="22" height="22" fill="#111" rx="2"/>
+              <rect x="7" y="7" width="16" height="16" fill="#fff" rx="1"/>
+              <rect x="10" y="10" width="10" height="10" fill="#111" rx="1"/>
+              <!-- Top-right finder -->
+              <rect x="52" y="4" width="22" height="22" fill="#111" rx="2"/>
+              <rect x="55" y="7" width="16" height="16" fill="#fff" rx="1"/>
+              <rect x="58" y="10" width="10" height="10" fill="#111" rx="1"/>
+              <!-- Bottom-left finder -->
+              <rect x="4" y="52" width="22" height="22" fill="#111" rx="2"/>
+              <rect x="7" y="55" width="16" height="16" fill="#fff" rx="1"/>
+              <rect x="10" y="58" width="10" height="10" fill="#111" rx="1"/>
+              <!-- Random data modules -->
+              <rect x="30" y="4" width="4" height="4" fill="#111"/>
+              <rect x="36" y="4" width="4" height="4" fill="#111"/>
+              <rect x="42" y="4" width="4" height="4" fill="#111"/>
+              <rect x="30" y="10" width="4" height="4" fill="#111"/>
+              <rect x="42" y="12" width="4" height="4" fill="#111"/>
+              <rect x="30" y="18" width="8" height="4" fill="#111"/>
+              <rect x="4" y="30" width="4" height="4" fill="#111"/>
+              <rect x="10" y="30" width="4" height="4" fill="#111"/>
+              <rect x="4" y="36" width="8" height="4" fill="#111"/>
+              <rect x="4" y="44" width="4" height="4" fill="#111"/>
+              <rect x="30" y="30" width="4" height="4" fill="#111"/>
+              <rect x="36" y="30" width="8" height="4" fill="#111"/>
+              <rect x="46" y="30" width="4" height="4" fill="#111"/>
+              <rect x="52" y="30" width="4" height="4" fill="#111"/>
+              <rect x="30" y="36" width="4" height="8" fill="#111"/>
+              <rect x="38" y="36" width="8" height="4" fill="#111"/>
+              <rect x="48" y="36" width="4" height="8" fill="#111"/>
+              <rect x="56" y="36" width="4" height="4" fill="#111"/>
+              <rect x="62" y="36" width="4" height="4" fill="#111"/>
+              <rect x="30" y="46" width="8" height="4" fill="#111"/>
+              <rect x="40" y="46" width="4" height="4" fill="#111"/>
+              <rect x="52" y="46" width="4" height="4" fill="#111"/>
+              <rect x="58" y="46" width="8" height="4" fill="#111"/>
+              <rect x="30" y="52" width="4" height="4" fill="#111"/>
+              <rect x="36" y="52" width="4" height="8" fill="#111"/>
+              <rect x="44" y="52" width="8" height="4" fill="#111"/>
+              <rect x="30" y="60" width="8" height="4" fill="#111"/>
+              <rect x="42" y="60" width="4" height="4" fill="#111"/>
+              <rect x="48" y="58" width="4" height="6" fill="#111"/>
+              <rect x="56" y="54" width="4" height="4" fill="#111"/>
+              <rect x="62" y="54" width="4" height="8" fill="#111"/>
+              <rect x="56" y="62" width="4" height="4" fill="#111"/>
+              <!-- QRIS label -->
+              <text x="39" y="75" fill="#1a8cff" font-size="6" text-anchor="middle" font-family="sans-serif" font-weight="bold">QRIS</text>
+            </svg>
+          </div>
+          <div class="soundbox-merchant-name">Donat Kentang<br>D'Java</div>
+          <div class="soundbox-speaker-grill">
+            <div class="grill-dot"></div><div class="grill-dot"></div>
+            <div class="grill-dot"></div><div class="grill-dot"></div>
+            <div class="grill-dot"></div><div class="grill-dot"></div>
+            <div class="grill-dot"></div>
+          </div>
+          <div class="soundbox-leds">
+            <div class="led-dot led-green pulsing" title="Online"></div>
+            <div class="led-dot led-red" title="Error"></div>
+            <div class="led-dot led-yellow" title="Charging"></div>
+          </div>
+          <div class="soundbox-logo-bottom">NYAMPAY</div>
+        </div>
+        <div class="soundbox-base"></div>
+        <div class="soundbox-buttons">
+          <div class="hw-btn"></div>
+          <div class="hw-btn"></div>
+          <div class="hw-btn"></div>
+        </div>
+      </div>
+      <div class="soundbox-label">
+        <strong>Soundbox V1 (Aktif)</strong>
+        LED Hijau berkedip = Online<br>
+        Suara notifikasi real-time
+      </div>
+    </div>
+
+    <!-- Soundbox V2 (greyed / in development) -->
+    <div>
+      <div class="soundbox-wrap" style="opacity:0.65; filter: saturate(0.4)">
+        <div class="soundbox-body" style="background: linear-gradient(145deg, #2a3040 0%, #1a2030 100%);">
+          <div class="soundbox-top-bar" style="background: linear-gradient(90deg,#334,#556)"><span>NYAMPAY V2</span></div>
+          <div class="qr-area" style="background:#1a2030">
+            <svg width="78" height="78" viewBox="0 0 78 78">
+              <rect width="78" height="78" fill="#1a2030"/>
+              <text x="39" y="44" fill="#556" font-size="28" text-anchor="middle">⚙</text>
+              <text x="39" y="62" fill="#556" font-size="8" text-anchor="middle" font-family="sans-serif">In Dev</text>
+            </svg>
+          </div>
+          <div class="soundbox-merchant-name" style="color:#8899aa">Lebih tipis<br>HPP lebih rendah</div>
+          <div class="soundbox-speaker-grill">
+            <div class="grill-dot" style="background:#445566"></div><div class="grill-dot" style="background:#445566"></div>
+            <div class="grill-dot" style="background:#445566"></div><div class="grill-dot" style="background:#445566"></div>
+            <div class="grill-dot" style="background:#445566"></div>
+          </div>
+          <div class="soundbox-leds">
+            <div class="led-dot" style="background:#445566"></div>
+            <div class="led-dot" style="background:#445566"></div>
+            <div class="led-dot" style="background:#445566"></div>
+          </div>
+          <div class="soundbox-logo-bottom" style="color:#556">NYAMPAY</div>
+        </div>
+        <div class="soundbox-base" style="background: linear-gradient(180deg,#2a3040,#1a2030)"></div>
+      </div>
+      <div class="soundbox-label">
+        <strong>Soundbox V2 (Q2-Q3 2026)</strong>
+        Desain lebih kompak<br>
+        Target HPP &lt; Rp 100.000
+      </div>
+    </div>
+
+    <!-- Virtual Soundbox (Phone) -->
+    <div>
+      <div class="phone-wrap">
+        <div class="phone-body">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <!-- Virtual Soundbox Screen -->
+            <div class="app-screen active-screen" id="vs-screen">
+              <div class="app-statusbar"><span>9:41</span><span>▲▲▲ 🔋</span></div>
+              <div class="app-header">
+                <span>🔊</span><span>Virtual Soundbox</span>
+              </div>
+              <div class="app-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+                <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#00d9a6,#0099aa);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 0 8px #00d9a611;">🔊</div>
+                <div style="font-size:9px;font-weight:bold;color:#334;text-align:center;">Soundbox Aktif</div>
+                <div style="font-size:7px;color:#00aa55;background:#e6faf2;padding:2px 8px;border-radius:8px;">● Online</div>
+                <div id="vs-notif-amount" style="font-size:13px;font-weight:bold;color:#00aa55;min-height:18px;text-align:center;"></div>
+                <div style="font-size:7px;color:#999;text-align:center;">Tap untuk nonaktifkan</div>
+              </div>
+              <div class="app-footer">
+                <div class="app-nav-item"><span class="nav-icon">🏠</span>Home</div>
+                <div class="app-nav-item active-nav"><span class="nav-icon">🔊</span>SBox</div>
+                <div class="app-nav-item"><span class="nav-icon">📋</span>Hist</div>
+                <div class="app-nav-item"><span class="nav-icon">⚙</span>Set</div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-btn-home"></div>
+        </div>
+      </div>
+      <div class="soundbox-label">
+        <strong>Virtual Soundbox</strong>
+        Smartphone jadi soundbox<br>
+        &lt; Rp 1.000/hari
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======= DEMO ANIMATION ======= -->
+<div class="biz-section">
+  <div class="biz-title">⚡ Simulasi Transaksi Real-Time</div>
+
+  <button class="play-btn" id="playBtn" onclick="startDemo()">▶ Jalankan Simulasi</button>
+
+  <div class="demo-stage" id="demoStage">
+
+    <!-- Buyer phone -->
+    <div style="text-align:center">
+      <div class="phone-wrap">
+        <div class="phone-body" style="width:130px;height:240px">
+          <div class="phone-notch" style="width:50px;height:14px"></div>
+          <div class="phone-screen" style="border-radius:0 0 20px 20px">
+            <div class="app-screen active-screen" id="buyer-screen">
+              <div class="app-statusbar"><span>9:41</span><span>🔋</span></div>
+              <div class="app-header" style="background:#00aa44"><span>💰</span><span>GoPay</span></div>
+              <div class="app-body" style="display:flex;flex-direction:column;align-items:center;padding:8px 6px;gap:4px;">
+                <div style="font-size:7px;color:#666;font-family:sans-serif;">Bayar ke</div>
+                <div style="font-size:8px;font-weight:bold;color:#334;font-family:sans-serif;text-align:center;">Donat Kentang D'Java</div>
+                <div id="buyer-amount" style="font-size:18px;font-weight:bold;color:#334;font-family:sans-serif;">Rp 25.000</div>
+                <div id="buyer-btn" style="background:#00aa44;color:#fff;border-radius:6px;padding:5px 14px;font-size:8px;font-weight:bold;font-family:sans-serif;cursor:pointer;" onclick="startDemo()">Bayar Sekarang</div>
+                <div id="buyer-status" style="font-size:8px;color:#00aa44;font-family:sans-serif;min-height:14px;text-align:center;font-weight:bold;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-btn-home" style="width:28px;height:4px"></div>
+        </div>
+      </div>
+      <div class="demo-label"><strong>Pembeli</strong>Scan & Bayar QRIS</div>
+    </div>
+
+    <!-- Arrow 1 -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:50px">
+      <div style="font-size:8px;color:#aa55ff;font-family:sans-serif;">Callback</div>
+      <div style="display:flex;align-items:center">
+        <div id="line1" style="height:2px;width:50px;background:#21262d;transition:background 0.5s;position:relative">
+          <div id="pkt1" style="position:absolute;width:10px;height:10px;background:#aa55ff;border-radius:50%;top:-4px;left:0;opacity:0;transition:none"></div>
+        </div>
+        <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #30363d" id="arr1"></div>
+      </div>
+      <div style="font-size:7px;color:#8b949e;font-family:sans-serif;">HTTPS POST</div>
+    </div>
+
+    <!-- Payment Gateway -->
+    <div style="text-align:center;padding-top:40px">
+      <div class="gateway-box" id="gwBox">
+        <div class="gw-title">PAYMENT GATEWAY</div>
+        <div style="font-size:16px;margin:4px 0">⚡</div>
+        <div class="gw-name">QRIS API</div>
+        <div id="gw-status" style="font-size:8px;color:#8b949e;font-family:sans-serif;margin-top:4px;">Standby</div>
+      </div>
+      <div class="demo-label"><strong>Payment Gateway</strong>Validasi transaksi</div>
+    </div>
+
+    <!-- Arrow 2 -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:50px">
+      <div style="font-size:8px;color:#1a8cff;font-family:sans-serif;">MQTT</div>
+      <div style="display:flex;align-items:center">
+        <div id="line2" style="height:2px;width:50px;background:#21262d;transition:background 0.5s;position:relative">
+          <div id="pkt2" style="position:absolute;width:10px;height:10px;background:#1a8cff;border-radius:50%;top:-4px;left:0;opacity:0;"></div>
+        </div>
+        <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #30363d" id="arr2"></div>
+      </div>
+      <div style="font-size:7px;color:#8b949e;font-family:sans-serif;">Publish topic</div>
+    </div>
+
+    <!-- NyamPay Server -->
+    <div style="text-align:center;padding-top:40px">
+      <div class="server-box" id="svBox">
+        <div class="sv-title">NYAMPAY SERVER</div>
+        <div style="font-size:16px;margin:4px 0">☁</div>
+        <div class="sv-name">Cloud IoT</div>
+        <div id="sv-status" style="font-size:8px;color:#8b949e;font-family:sans-serif;margin-top:4px;">Listening...</div>
+      </div>
+      <div class="demo-label"><strong>NyamPay Server</strong>MQTT Broker</div>
+    </div>
+
+    <!-- Arrow 3 -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:50px">
+      <div style="font-size:8px;color:#00d9a6;font-family:sans-serif;">WiFi</div>
+      <div style="display:flex;align-items:center">
+        <div id="line3" style="height:2px;width:50px;background:#21262d;transition:background 0.5s;position:relative">
+          <div id="pkt3" style="position:absolute;width:10px;height:10px;background:#00d9a6;border-radius:50%;top:-4px;left:0;opacity:0;"></div>
+        </div>
+        <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #30363d" id="arr3"></div>
+      </div>
+      <div style="font-size:7px;color:#8b949e;font-family:sans-serif;">IoT Push</div>
+    </div>
+
+    <!-- Soundbox outcome -->
+    <div style="text-align:center">
+      <div class="soundbox-wrap" style="transform:scale(0.75);transform-origin:top center;margin-top:-10px">
+        <div class="soundbox-body" id="demo-soundbox">
+          <div class="soundbox-top-bar"><span>NYAMPAY</span></div>
+          <div class="qr-area">
+            <svg width="60" height="60" viewBox="0 0 60 60">
+              <rect width="60" height="60" fill="#fff"/>
+              <rect x="3" y="3" width="17" height="17" fill="#111" rx="1"/>
+              <rect x="5" y="5" width="13" height="13" fill="#fff" rx="1"/>
+              <rect x="8" y="8" width="7" height="7" fill="#111" rx="1"/>
+              <rect x="40" y="3" width="17" height="17" fill="#111" rx="1"/>
+              <rect x="42" y="5" width="13" height="13" fill="#fff" rx="1"/>
+              <rect x="45" y="8" width="7" height="7" fill="#111" rx="1"/>
+              <rect x="3" y="40" width="17" height="17" fill="#111" rx="1"/>
+              <rect x="5" y="42" width="13" height="13" fill="#fff" rx="1"/>
+              <rect x="8" y="45" width="7" height="7" fill="#111" rx="1"/>
+              <rect x="24" y="3" width="4" height="4" fill="#111"/>
+              <rect x="24" y="9" width="4" height="4" fill="#111"/>
+              <rect x="30" y="6" width="4" height="4" fill="#111"/>
+              <rect x="24" y="24" width="4" height="4" fill="#111"/>
+              <rect x="30" y="24" width="8" height="4" fill="#111"/>
+              <rect x="24" y="30" width="4" height="8" fill="#111"/>
+              <rect x="34" y="30" width="4" height="4" fill="#111"/>
+            </svg>
+          </div>
+          <div class="soundbox-merchant-name" style="font-size:7px">Donat Kentang</div>
+          <div class="soundbox-speaker-grill">
+            <div class="grill-dot"></div><div class="grill-dot"></div>
+            <div class="grill-dot"></div><div class="grill-dot"></div>
+            <div class="grill-dot"></div>
+          </div>
+          <div class="soundbox-leds">
+            <div class="led-dot led-green pulsing" id="demo-led"></div>
+            <div class="led-dot led-red"></div>
+            <div class="led-dot led-yellow"></div>
+          </div>
+          <div class="soundbox-logo-bottom">NYAMPAY</div>
+        </div>
+        <div class="soundbox-base"></div>
+      </div>
+      <div id="sound-notif" style="font-family:sans-serif;font-size:10px;color:#00d9a6;text-align:center;margin-top:4px;min-height:32px;font-weight:bold;line-height:1.4;"></div>
+      <div class="demo-label"><strong>Soundbox</strong>Notifikasi suara</div>
+    </div>
+
+  </div>
+
+  <div class="step-detail" id="stepDetail">
+    <div class="step-detail-title" id="stepTitle">▶ Klik "Jalankan Simulasi" untuk demo transaksi</div>
+    <div class="step-detail-body" id="stepBody">Simulasi akan menunjukkan alur lengkap dari pembeli scan QRIS hingga soundbox berbunyi dalam &lt; 3 detik.</div>
+  </div>
+</div>
+
+<!-- ======= MERCHANT DASHBOARD ======= -->
+<div class="biz-section">
+  <div class="biz-title">📊 Dashboard Merchant App</div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+
+    <!-- Mobile App -->
+    <div>
+      <div class="phone-wrap">
+        <div class="phone-body" style="width:170px;height:320px">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <!-- Dashboard screen -->
+            <div class="app-screen active-screen" id="merchant-dashboard">
+              <div class="app-statusbar"><span>9:41</span><span>WiFi 🔋85%</span></div>
+              <div class="app-header">
+                <span>🏪</span><span>NyamPay Merchant</span>
+              </div>
+              <div class="app-body">
+                <div class="dash-balance">
+                  <div class="bal-label">Saldo Hari Ini</div>
+                  <div class="bal-amount" id="mb-balance">Rp 247.500</div>
+                  <div class="bal-sub">18 transaksi • MDR 0%</div>
+                </div>
+                <div class="dash-quick">
+                  <div class="dash-quick-btn"><div class="qbtn-icon">💸</div>Tarik Dana</div>
+                  <div class="dash-quick-btn"><div class="qbtn-icon">📊</div>Laporan</div>
+                  <div class="dash-quick-btn"><div class="qbtn-icon">📶</div>PPOB</div>
+                  <div class="dash-quick-btn"><div class="qbtn-icon">🔊</div>SBox</div>
+                </div>
+                <div class="txn-list-title">Transaksi Terbaru</div>
+                <div id="mobile-txn-list">
+                  <div class="txn-item"><div class="txn-left"><div class="txn-name">QRIS</div><div class="txn-time">09:38 WIB</div></div><div class="txn-amount">+Rp 25.000</div></div>
+                  <div class="txn-item"><div class="txn-left"><div class="txn-name">QRIS</div><div class="txn-time">09:21 WIB</div></div><div class="txn-amount">+Rp 15.000</div></div>
+                  <div class="txn-item"><div class="txn-left"><div class="txn-name">QRIS</div><div class="txn-time">09:05 WIB</div></div><div class="txn-amount">+Rp 35.000</div></div>
+                </div>
+              </div>
+              <div class="app-footer">
+                <div class="app-nav-item active-nav"><span class="nav-icon">🏠</span>Beranda</div>
+                <div class="app-nav-item"><span class="nav-icon">📋</span>Riwayat</div>
+                <div class="app-nav-item"><span class="nav-icon">⬜</span>QRIS</div>
+                <div class="app-nav-item"><span class="nav-icon">🔊</span>SBox</div>
+                <div class="app-nav-item"><span class="nav-icon">⚙</span>Set</div>
+              </div>
+            </div>
+            <!-- Notification overlay -->
+            <div class="notif-overlay" id="mobile-notif-overlay">
+              <div class="notif-card">
+                <div class="notif-header">
+                  <span class="n-logo">🔊 NyamPay</span>
+                  <span class="n-time">Baru saja</span>
+                </div>
+                <div class="notif-title">Pembayaran Masuk!</div>
+                <div class="notif-amount" id="notif-display-amount">Rp 25.000</div>
+                <div class="notif-body">Via QRIS • Donat Kentang D'Java<br>✅ Terverifikasi Real-time</div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-btn-home"></div>
+        </div>
+      </div>
+      <div class="demo-label" style="margin-top:10px"><strong>Merchant App (Android)</strong>Dashboard pedagang</div>
+    </div>
+
+    <!-- Web Dashboard -->
+    <div style="flex:1;min-width:280px">
+      <div class="dashboard-wrap">
+        <div class="db-topbar">
+          <div>
+            <div class="db-logo">🏪 NyamPay Admin</div>
+            <div class="db-merchant">Donat Kentang D'Java</div>
+          </div>
+          <div class="db-status">● Online</div>
+        </div>
+        <div class="db-body">
+          <!-- Soundbox status -->
+          <div class="db-soundbox-status">
+            <div class="db-sb-dot"></div>
+            <div class="db-sb-info">
+              <div class="db-sb-name">Soundbox NyamPay #001</div>
+              <div class="db-sb-sub">WiFi: Terhubung • Baterai: 78% • Latensi: 0.8s</div>
+            </div>
+          </div>
+          <!-- KPI Cards -->
+          <div class="db-cards">
+            <div class="db-card">
+              <div class="dc-label">Pendapatan Hari Ini</div>
+              <div class="dc-value" id="db-today">Rp 247K</div>
+              <div class="dc-sub">↑ 12% vs kemarin</div>
+            </div>
+            <div class="db-card">
+              <div class="dc-label">Total Transaksi</div>
+              <div class="dc-value" id="db-txn-count">18</div>
+              <div class="dc-sub">↑ 3 transaksi</div>
+            </div>
+            <div class="db-card">
+              <div class="dc-label">Saldo Siap Tarik</div>
+              <div class="dc-value" id="db-balance">Rp 192K</div>
+              <div class="dc-sub">Cair &lt; 1 Jam</div>
+            </div>
+          </div>
+          <!-- Mini chart -->
+          <div class="db-section-title">Pendapatan 7 Hari</div>
+          <div class="mini-chart" style="margin-bottom:10px">
+            <div class="bar-col" style="height:30%"></div>
+            <div class="bar-col" style="height:55%"></div>
+            <div class="bar-col" style="height:45%"></div>
+            <div class="bar-col" style="height:80%"></div>
+            <div class="bar-col" style="height:60%"></div>
+            <div class="bar-col" style="height:90%"></div>
+            <div class="bar-col" id="last-bar" style="height:70%;background:#00d9a6;opacity:1"></div>
+          </div>
+          <!-- Recent txn -->
+          <div class="db-section-title">Transaksi Terbaru</div>
+          <div id="db-txn-list">
+            <div class="db-txn-item">
+              <div class="db-txn-left"><div class="db-txn-name">QRIS • Pelanggan</div><div class="db-txn-time">09:38:22 WIB</div></div>
+              <div style="display:flex;align-items:center;gap:6px"><span class="db-txn-badge badge-success">Sukses</span><span class="db-txn-amount">+Rp 25.000</span></div>
+            </div>
+            <div class="db-txn-item">
+              <div class="db-txn-left"><div class="db-txn-name">QRIS • Pelanggan</div><div class="db-txn-time">09:21:07 WIB</div></div>
+              <div style="display:flex;align-items:center;gap:6px"><span class="db-txn-badge badge-success">Sukses</span><span class="db-txn-amount">+Rp 15.000</span></div>
+            </div>
+            <div class="db-txn-item">
+              <div class="db-txn-left"><div class="db-txn-name">PPOB • Token PLN</div><div class="db-txn-time">08:55:44 WIB</div></div>
+              <div style="display:flex;align-items:center;gap:6px"><span class="db-txn-badge badge-success">Sukses</span><span class="db-txn-amount">+Rp 2.500</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-label" style="margin-top:10px"><strong>Web Dashboard Admin</strong>Monitoring semua merchant</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= FLOW DIAGRAM ======= -->
+<div class="biz-section">
+  <div class="biz-title">🔄 Alur Proses Bisnis NyamPay</div>
+  <div class="flow-container">
+    <div class="flow-steps">
+
+      <div class="flow-step">
+        <div class="flow-node node-blue" onclick="showFlowDetail(1)">
+          <div class="flow-icon">🏪</div>
+          <div class="flow-num flow-num-blue">1</div>
+        </div>
+        <div class="flow-label">Merchant Daftar</div>
+        <div class="flow-sublabel">Install app, isi data toko</div>
+      </div>
+      <div class="flow-arrow" id="fa1"></div>
+
+      <div class="flow-step">
+        <div class="flow-node node-orange" onclick="showFlowDetail(2)">
+          <div class="flow-icon">🔧</div>
+          <div class="flow-num flow-num-orange">2</div>
+        </div>
+        <div class="flow-label">Pasang Soundbox</div>
+        <div class="flow-sublabel">Tim lapangan install & pairing</div>
+      </div>
+      <div class="flow-arrow" id="fa2"></div>
+
+      <div class="flow-step">
+        <div class="flow-node node-green" onclick="showFlowDetail(3)">
+          <div class="flow-icon">📱</div>
+          <div class="flow-num flow-num-green">3</div>
+        </div>
+        <div class="flow-label">Pembeli Scan</div>
+        <div class="flow-sublabel">Scan QRIS, bayar via e-wallet</div>
+      </div>
+      <div class="flow-arrow" id="fa3"></div>
+
+      <div class="flow-step">
+        <div class="flow-node node-purple" onclick="showFlowDetail(4)">
+          <div class="flow-icon">⚡</div>
+          <div class="flow-num flow-num-purple">4</div>
+        </div>
+        <div class="flow-label">Server Proses</div>
+        <div class="flow-sublabel">Callback → MQTT push ≤ 1 det</div>
+      </div>
+      <div class="flow-arrow" id="fa4"></div>
+
+      <div class="flow-step">
+        <div class="flow-node node-green" onclick="showFlowDetail(5)" id="fn5">
+          <div class="flow-icon">🔊</div>
+          <div class="flow-num flow-num-green">5</div>
+        </div>
+        <div class="flow-label">Soundbox Bunyi</div>
+        <div class="flow-sublabel">"NyamPay, Dua Puluh Lima Ribu Diterima"</div>
+      </div>
+      <div class="flow-arrow" id="fa5"></div>
+
+      <div class="flow-step">
+        <div class="flow-node node-blue" onclick="showFlowDetail(6)">
+          <div class="flow-icon">💰</div>
+          <div class="flow-num flow-num-blue">6</div>
+        </div>
+        <div class="flow-label">Saldo Masuk</div>
+        <div class="flow-sublabel">Real-time di app merchant</div>
+      </div>
+      <div class="flow-arrow" id="fa6"></div>
+
+      <div class="flow-step">
+        <div class="flow-node node-green" onclick="showFlowDetail(7)">
+          <div class="flow-icon">🏦</div>
+          <div class="flow-num flow-num-green">7</div>
+        </div>
+        <div class="flow-label">Tarik Dana</div>
+        <div class="flow-sublabel">Cair ke rekening ≤ 1 jam, MDR 0%</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="step-detail" id="flowDetail" style="display:none">
+    <div class="step-detail-title" id="flowDetailTitle"></div>
+    <div class="step-detail-body" id="flowDetailBody"></div>
+  </div>
+</div>
+
+<!-- ======= FAILOVER SCENARIO ======= -->
+<div class="biz-section">
+  <div class="biz-title">🛡 Skenario Keamanan — Sistem Failover</div>
+  <div class="failover-scenario">
+    <div class="failover-title">⚠ Kondisi: Soundbox Fisik Mati / Offline</div>
+    <div class="failover-steps">
+      <div class="fs-item"><div class="fs-num">1</div><div>Transaksi QRIS masuk dari pembeli — server NyamPay menerima callback dari payment gateway</div></div>
+      <div class="fs-item"><div class="fs-num">2</div><div>Server cek status soundbox — perangkat tidak merespons dalam <strong style="color:#e6edf3">60 detik</strong> (offline/baterai habis/WiFi putus)</div></div>
+      <div class="fs-item"><div class="fs-num">3</div><div><strong style="color:#e6edf3">Failover Engine aktif otomatis</strong> — server ambil daftar nomor HP cadangan yang terdaftar di akun merchant</div></div>
+      <div class="fs-item"><div class="fs-num">4</div><div>Push notification dikirim ke HP pemilik warung dan/atau HP karyawan yang terdaftar</div></div>
+      <div class="fs-item"><div class="fs-num">5</div><div>Merchant tetap mengetahui ada pembayaran masuk — <strong style="color:#e6edf3">tidak ada celah penipuan</strong> meskipun alat mati</div></div>
+      <div class="fs-item"><div class="fs-num">6</div><div>Event failover tercatat di log admin dashboard untuk monitoring SLA maintenance</div></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <div class="note-box ok" style="flex:1;min-width:220px">
+      <strong>✅ Normal Flow</strong>
+      Soundbox online → bunyi otomatis dalam ≤ 3 detik setelah transaksi berhasil. Merchant tidak perlu cek HP sama sekali.
+    </div>
+    <div class="note-box" style="flex:1;min-width:220px">
+      <strong>⚠ Failover Flow</strong>
+      Soundbox offline → push notif ke HP dalam ≤ 5 detik. Keamanan tetap terjaga berlapis meskipun hardware bermasalah.
+    </div>
+    <div class="note-box info" style="flex:1;min-width:220px">
+      <strong>📱 Virtual Soundbox</strong>
+      Alternatif tanpa hardware — HP merchant sendiri berfungsi sebagai soundbox. Ideal untuk PKL/pedagang keliling dengan biaya &lt; Rp 1.000/hari.
+    </div>
+  </div>
+</div>
+
+</div><!-- end tab-bisnis -->
+
 <script>
 function showTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -898,7 +1916,129 @@ function showTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
 }
-</script>
 
-</body>
-</html>
+/* ====== DEMO SIMULATION ====== */
+let demoRunning = false;
+function startDemo() {
+  if (demoRunning) return;
+  demoRunning = true;
+  const btn = document.getElementById('playBtn');
+  btn.textContent = '⏳ Simulasi Berjalan...';
+  btn.disabled = true;
+
+  const setStep = (title, body) => {
+    document.getElementById('stepTitle').textContent = title;
+    document.getElementById('stepBody').innerHTML = body;
+  };
+  const animPacket = (id, lineId, arrId, color) => {
+    return new Promise(res => {
+      const pkt = document.getElementById(id);
+      const line = document.getElementById(lineId);
+      const arr = document.getElementById(arrId);
+      line.style.background = color;
+      arr.style.borderLeftColor = color;
+      pkt.style.opacity = '1';
+      pkt.style.left = '0px';
+      pkt.style.transition = 'left 0.8s linear';
+      setTimeout(() => { pkt.style.left = '44px'; }, 50);
+      setTimeout(() => { pkt.style.opacity = '0'; res(); }, 900);
+    });
+  };
+
+  // Step 1 — buyer pays
+  setStep('Step 1 — Pembeli Scan & Bayar', 'Pembeli membuka GoPay/OVO/Dana, scan QRIS merchant, lalu konfirmasi pembayaran <strong>Rp 25.000</strong>.');
+  document.getElementById('buyer-status').textContent = '⏳ Memproses...';
+
+  setTimeout(async () => {
+    // Step 2 — callback to gateway
+    document.getElementById('buyer-status').textContent = '✅ Pembayaran Berhasil!';
+    setStep('Step 2 — Callback ke Payment Gateway', 'E-wallet pembeli mengirim <strong>HTTPS POST callback</strong> ke Payment Gateway NyamPay dengan data transaksi yang terenkripsi.');
+    document.getElementById('gw-status').textContent = 'Receiving...';
+    await animPacket('pkt1', 'line1', 'arr1', '#aa55ff');
+
+    setTimeout(async () => {
+      // Step 3 — gateway to server
+      document.getElementById('gw-status').textContent = '✅ Tervalidasi';
+      document.getElementById('gwBox').style.borderColor = '#00d9a6';
+      setStep('Step 3 — Gateway Push ke Server NyamPay', 'Payment Gateway memverifikasi transaksi dan mengirim <strong>MQTT message</strong> ke NyamPay Cloud Server dengan payload JSON terenkripsi.');
+      document.getElementById('sv-status').textContent = 'Receiving...';
+      await animPacket('pkt2', 'line2', 'arr2', '#1a8cff');
+
+      setTimeout(async () => {
+        // Step 4 — server to soundbox
+        document.getElementById('sv-status').textContent = '✅ Routing...';
+        document.getElementById('svBox').style.borderColor = '#00d9a6';
+        setStep('Step 4 — Server Push ke Soundbox via WiFi', 'Server NyamPay publish MQTT message ke topic <code>nyampay/merchant_001/payment</code>. ESP32 di soundbox subscribe ke topic ini dan langsung menerima perintah audio.');
+        await animPacket('pkt3', 'line3', 'arr3', '#00d9a6');
+
+        setTimeout(() => {
+          // Step 5 — soundbox rings
+          document.getElementById('demo-soundbox').style.boxShadow = '0 0 0 4px #00d9a655, 0 0 20px #00d9a633';
+          document.getElementById('sound-notif').innerHTML = '🔊<br>"NyamPay,<br>Dua Puluh Lima Ribu<br>Diterima"';
+          setStep('Step 5 — Soundbox Berbunyi! ✅', '🔊 Dalam <strong>&lt; 3 detik</strong> sejak pembayaran, soundbox mengeluarkan notifikasi suara. Pedagang langsung tahu ada uang masuk <strong>tanpa perlu lihat HP</strong>. Tidak ada celah untuk penipuan struk palsu!');
+
+          // Update mobile dashboard
+          setTimeout(() => {
+            document.getElementById('mb-balance').textContent = 'Rp 272.500';
+            document.getElementById('mobile-notif-overlay').classList.add('show-notif');
+            const newTxn = '<div class="txn-item"><div class="txn-left"><div class="txn-name">QRIS ✅</div><div class="txn-time">09:41 WIB</div></div><div class="txn-amount" style="color:#00d9a6">+Rp 25.000</div></div>';
+            document.getElementById('mobile-txn-list').innerHTML = newTxn + document.getElementById('mobile-txn-list').innerHTML;
+
+            // Update web dashboard
+            document.getElementById('db-today').textContent = 'Rp 272K';
+            document.getElementById('db-txn-count').textContent = '19';
+            document.getElementById('last-bar').style.height = '80%';
+            const newDbTxn = '<div class="db-txn-item" style="border-left:2px solid #00d9a6"><div class="db-txn-left"><div class="db-txn-name">QRIS • Pelanggan ✅</div><div class="db-txn-time">09:41:05 WIB — BARU</div></div><div style="display:flex;align-items:center;gap:6px"><span class="db-txn-badge badge-success">Sukses</span><span class="db-txn-amount" style="color:#00d9a6">+Rp 25.000</span></div></div>';
+            document.getElementById('db-txn-list').innerHTML = newDbTxn + document.getElementById('db-txn-list').innerHTML;
+
+            setStep('✅ Transaksi Selesai — Total waktu: ~2.1 detik', 'Saldo merchant langsung bertambah di <strong>app mobile</strong> dan <strong>web dashboard</strong>. Soundbox berbunyi konfirmasi. Pedagang bisa fokus melayani pembeli berikutnya tanpa khawatir ditipu struk palsu. <br><br>Dana dapat ditarik ke rekening bank dalam <strong>&lt; 1 jam</strong> dengan <strong>MDR 0%</strong>.');
+
+            setTimeout(() => {
+              document.getElementById('mobile-notif-overlay').classList.remove('show-notif');
+              document.getElementById('demo-soundbox').style.boxShadow = '';
+              document.getElementById('sound-notif').innerHTML = '';
+              document.getElementById('gw-status').textContent = 'Standby';
+              document.getElementById('sv-status').textContent = 'Listening...';
+              document.getElementById('gwBox').style.borderColor = '#aa55ff';
+              document.getElementById('svBox').style.borderColor = '#1a8cff';
+              document.getElementById('buyer-status').textContent = '';
+              btn.textContent = '▶ Ulangi Simulasi';
+              btn.disabled = false;
+              demoRunning = false;
+            }, 4000);
+          }, 600);
+        }, 600);
+      }, 800);
+    }, 800);
+  }, 1200);
+}
+
+/* ====== FLOW DETAIL ====== */
+const flowDetails = {
+  1: {
+    title: '1. Merchant Daftar & Onboarding',
+    body: `Merchant download <strong>NyamPay Merchant App</strong> dari Play Store. Daftar dengan nomor HP, verifikasi OTP, isi data toko (nama, alamat, jenis usaha). Tim NyamPay akan menghubungi untuk jadwal pemasangan perangkat. Trial 7 hari gratis tersedia.`
+  },
+  2: {
+    title: '2. Pemasangan & Aktivasi Soundbox',
+    body: `Tim lapangan NyamPay datang ke lokasi pedagang, memasang soundbox di meja kasir, melakukan <strong>WiFi pairing</strong> dengan router toko. Test transaksi demo dilakukan untuk memastikan notifikasi suara berfungsi. Seluruh proses instalasi ≤ 15 menit.`
+  },
+  3: {
+    title: '3. Pembeli Scan QRIS & Bayar',
+    body: `Pembeli scan kode QRIS yang terpampang di soundbox menggunakan e-wallet apa saja (GoPay, OVO, Dana, BCA, dll). Konfirmasi pembayaran di HP pembeli. Transaksi diproses oleh payment gateway nasional yang terintegrasi.`
+  },
+  4: {
+    title: '4. Server NyamPay Proses Real-Time',
+    body: `Payment gateway mengirim <strong>callback HTTPS</strong> ke server NyamPay dalam milidetik. Server memvalidasi signature transaksi (anti-replay, anti-spoofing), lalu mempublish perintah audio ke <strong>MQTT broker</strong> dengan topic spesifik merchant. Seluruh proses ≤ 1 detik.`
+  },
+  5: {
+    title: '5. Soundbox Berbunyi & Konfirmasi Visual',
+    body: `ESP32 di soundbox menerima MQTT message, decode nominalnya, dan memutar file audio dari SD Card via I2S amplifier MAX98357A. <em>"NyamPay, Dua Puluh Lima Ribu Diterima."</em> LED biru berkedip. Total latency dari pembayaran hingga bunyi: <strong>≤ 3 detik</strong>.`
+  },
+  6: {
+    title: '6. Saldo Merchant Bertambah Real-Time',
+    body: `Secara bersamaan, saldo merchant di <strong>Merchant App</strong> dan <strong>Web Dashboard</strong> langsung diperbarui. Riwayat transaksi tercatat dengan timestamp, nominal, dan status. Push notification dikirim ke HP merchant sebagai konfirmasi tambahan.`
+  },
+  7: {
+    title: '7. Penarikan Dana — Cair < 1 Jam, MDR 0%',
+    body: `Merchant buka menu "Tarik Dana" di app, pilih rekening bank tujuan, input nominal, konfirmasi PIN. <strong>Settlement engine</str
