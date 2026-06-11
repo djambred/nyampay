@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NyamPay Soundbox — Skema Rangkaian</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --accent: #1a8cff;
+    --accent2: #00d9a6;
+    --warn: #f0a500;
+    --danger: #ff4d4d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --wire-power: #ff5555;
+    --wire-gnd: #555577;
+    --wire-data: #55aaff;
+    --wire-audio: #55dd88;
+    --wire-ctrl: #ffaa33;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+  }
+
+  header .logo {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-family: sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  header p {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: sans-serif;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 28px;
+    padding: 12px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: sans-serif;
+    color: var(--text2);
+  }
+
+  .legend-line {
+    width: 28px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: sans-serif;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SVG Diagram */
+  .diagram-wrap {
+    overflow-x: auto;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  svg text { font-family: 'Courier New', monospace; }
+
+  /* Component Cards */
+  .components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .comp-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .comp-card:hover { border-color: var(--accent); }
+
+  .comp-card .comp-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .comp-badge {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .comp-name {
+    font-size: 13px;
+    font-family: sans-serif;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .comp-table td {
+    padding: 3px 0;
+    vertical-align: top;
+  }
+
+  .comp-table td:first-child {
+    color: var(--text2);
+    width: 90px;
+    font-family: sans-serif;
+  }
+
+  .comp-table td:last-child {
+    color: var(--text);
+    font-family: sans-serif;
+  }
+
+  .pin-list {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .pin-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+    font-size: 10px;
+  }
+
+  .pin-name { color: var(--text2); font-family: sans-serif; }
+
+  .pin-conn {
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+  }
+
+  .pin-pwr  { color: var(--wire-power); }
+  .pin-gnd  { color: var(--wire-gnd); }
+  .pin-data { color: var(--wire-data); }
+  .pin-audio{ color: var(--wire-audio); }
+  .pin-ctrl { color: var(--wire-ctrl); }
+
+  /* Pin Table (full detail) */
+  .pin-full-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+
+  .pin-full-table th {
+    background: var(--bg3);
+    color: var(--text2);
+    padding: 8px 10px;
+    text-align: left;
+    font-family: sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pin-full-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--bg3);
+    font-family: sans-serif;
+    font-size: 11px;
+    vertical-align: top;
+  }
+
+  .pin-full-table tr:hover td { background: var(--bg2); }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .tag-pwr   { background: #3d1515; color: var(--wire-power); }
+  .tag-gnd   { background: #1a1a2e; color: #8888bb; }
+  .tag-data  { background: #0d2137; color: var(--wire-data); }
+  .tag-audio { background: #0d3022; color: var(--wire-audio); }
+  .tag-ctrl  { background: #2e1f00; color: var(--wire-ctrl); }
+  .tag-gpio  { background: #1e2d1e; color: #88cc88; }
+
+  /* Notes */
+  .note-box {
+    background: var(--bg2);
+    border-left: 3px solid var(--warn);
+    padding: 12px 14px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 14px;
+    font-size: 12px;
+    font-family: sans-serif;
+    line-height: 1.6;
+    color: var(--text2);
+  }
+
+  .note-box strong { color: var(--warn); }
+
+  .note-box.info { border-left-color: var(--accent); }
+  .note-box.info strong { color: var(--accent); }
+
+  .note-box.ok { border-left-color: var(--accent2); }
+  .note-box.ok strong { color: var(--accent2); }
+
+  section-title {
+    display: block;
+    font-family: sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NyamPay Engineering</div>
+  <h1>📡 Skema Rangkaian QRIS Soundbox</h1>
+  <p>Hardware V1.0 / V2.0 — IoT Payment Notification Device</p>
+</header>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-line" style="background:var(--wire-power)"></div>3.3V / 5V Power</div>
+  <div class="legend-item"><div class="legend-line" style="background:var(--wire-gnd)"></div>GND</div>
+  <div class="legend-item"><div class="legend-line" style="background:var(--wire-data)"></div>Data / WiFi / I2S</div>
+  <div class="legend-item"><div class="legend-line" style="background:var(--wire-audio)"></div>Audio Signal</div>
+  <div class="legend-item"><div class="legend-line" style="background:var(--wire-ctrl)"></div>Control / GPIO</div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('diagram')">Blok Diagram</button>
+  <button class="tab" onclick="showTab('schematic')">Skema Detail</button>
+  <button class="tab" onclick="showTab('pinout')">Tabel Koneksi Pin</button>
+  <button class="tab" onclick="showTab('bom')">BOM (Daftar Komponen)</button>
+  <button class="tab" onclick="showTab('notes')">Catatan Teknis</button>
+</div>
+
+<!-- TAB 1: Block Diagram -->
+<div id="tab-diagram" class="tab-panel active">
+  <div class="diagram-wrap">
+    <svg width="780" height="520" viewBox="0 0 780 520">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
+        </marker>
+        <marker id="arrow-pwr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#ff5555"/>
+        </marker>
+        <marker id="arrow-data" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#55aaff"/>
+        </marker>
+        <marker id="arrow-audio" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#55dd88"/>
+        </marker>
+        <marker id="arrow-ctrl" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#ffaa33"/>
+        </marker>
+      </defs>
+
+      <!-- Background -->
+      <rect width="780" height="520" fill="#161b22"/>
+
+      <!-- Title -->
+      <text x="390" y="22" fill="#8b949e" font-size="11" text-anchor="middle" font-family="sans-serif">BLOK DIAGRAM SISTEM — NyamPay Soundbox</text>
+
+      <!-- === POWER BLOCK === -->
+      <rect x="20" y="40" width="120" height="80" rx="6" fill="#1a1020" stroke="#ff5555" stroke-width="1.5"/>
+      <text x="80" y="60" fill="#ff5555" font-size="9" text-anchor="middle" font-family="sans-serif" font-weight="bold">POWER SUPPLY</text>
+      <text x="80" y="76" fill="#e6edf3" font-size="9" text-anchor="middle" font-family="sans-serif">Li-Ion 3.7V</text>
+      <text x="80" y="90" fill="#e6edf3" font-size="9" text-anchor="middle" font-family="sans-serif">2000–3000 mAh</text>
+      <text x="80" y="105" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">+ TP4056 BMS</text>
+
+      <!-- === USB CHARGER === -->
+      <rect x="20" y="150" width="120" height="50" rx="6" fill="#1a1020" stroke="#ff5555" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="80" y="170" fill="#ff9999" font-size="9" text-anchor="middle" font-family="sans-serif">USB-C / Micro-USB</text>
+      <text x="80" y="184" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">5V Charger Input</text>
+
+      <!-- TP4056 arrow from USB to Battery -->
+      <line x1="80" y1="150" x2="80" y2="120" stroke="#ff5555" stroke-width="1.5" marker-end="url(#arrow-pwr)"/>
+
+      <!-- === MT3608 Boost === -->
+      <rect x="20" y="230" width="120" height="50" rx="6" fill="#1a1020" stroke="#f0a500" stroke-width="1.5"/>
+      <text x="80" y="250" fill="#f0a500" font-size="9" text-anchor="middle" font-family="sans-serif" font-weight="bold">MT3608 BOOST</text>
+      <text x="80" y="264" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">3.7V → 5V out</text>
+
+      <!-- Battery to Boost -->
+      <line x1="80" y1="120" x2="80" y2="230" stroke="#ff5555" stroke-width="1.5" marker-end="url(#arrow-pwr)"/>
+
+      <!-- === MAIN MCU: ESP32 === -->
+      <rect x="220" y="120" width="180" height="220" rx="8" fill="#0d2030" stroke="#55aaff" stroke-width="2"/>
+      <text x="310" y="145" fill="#55aaff" font-size="11" text-anchor="middle" font-family="sans-serif" font-weight="bold">ESP32 / ESP8266</text>
+      <text x="310" y="160" fill="#8b949e" font-size="9" text-anchor="middle" font-family="sans-serif">Main Microcontroller</text>
+
+      <text x="230" y="185" fill="#88cc88" font-size="9" font-family="sans-serif">• WiFi 802.11 b/g/n</text>
+      <text x="230" y="200" fill="#88cc88" font-size="9" font-family="sans-serif">• I2S / DAC output</text>
+      <text x="230" y="215" fill="#88cc88" font-size="9" font-family="sans-serif">• GPIO 3.3V logic</text>
+      <text x="230" y="230" fill="#88cc88" font-size="9" font-family="sans-serif">• MQTT client</text>
+      <text x="230" y="245" fill="#88cc88" font-size="9" font-family="sans-serif">• OTA update</text>
+      <text x="230" y="260" fill="#88cc88" font-size="9" font-family="sans-serif">• Flash 4MB</text>
+      <text x="230" y="275" fill="#88cc88" font-size="9" font-family="sans-serif">• PSRAM (opsional)</text>
+      <text x="230" y="295" fill="#8b949e" font-size="8" font-family="sans-serif">GPIO2 → LED Status</text>
+      <text x="230" y="308" fill="#8b949e" font-size="8" font-family="sans-serif">GPIO34/35 → Buttons</text>
+      <text x="230" y="321" fill="#8b949e" font-size="8" font-family="sans-serif">I2S → MAX98357</text>
+
+      <!-- Power to ESP32 -->
+      <line x1="140" y1="255" x2="220" y2="230" stroke="#ff5555" stroke-width="1.5" marker-end="url(#arrow-pwr)"/>
+
+      <!-- === AUDIO AMPLIFIER === -->
+      <rect x="460" y="120" width="140" height="90" rx="6" fill="#0d3022" stroke="#55dd88" stroke-width="1.5"/>
+      <text x="530" y="143" fill="#55dd88" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">MAX98357A</text>
+      <text x="530" y="158" fill="#8b949e" font-size="9" text-anchor="middle" font-family="sans-serif">I2S Class D Amplifier</text>
+      <text x="470" y="175" fill="#e6edf3" font-size="8" font-family="sans-serif">• 3W output @ 4Ω</text>
+      <text x="470" y="188" fill="#e6edf3" font-size="8" font-family="sans-serif">• I2S digital input</text>
+      <text x="470" y="201" fill="#e6edf3" font-size="8" font-family="sans-serif">• No analog noise</text>
+
+      <!-- ESP32 I2S → MAX98357 -->
+      <line x1="400" y1="175" x2="460" y2="165" stroke="#55dd88" stroke-width="1.5" stroke-dasharray="5,2" marker-end="url(#arrow-audio)"/>
+      <text x="425" y="167" fill="#55dd88" font-size="8" text-anchor="middle" font-family="sans-serif">I2S</text>
+
+      <!-- === SPEAKER === -->
+      <rect x="660" y="120" width="100" height="70" rx="6" fill="#0d3022" stroke="#55dd88" stroke-width="1.5"/>
+      <text x="710" y="145" fill="#55dd88" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">SPEAKER</text>
+      <text x="710" y="160" fill="#e6edf3" font-size="8" text-anchor="middle" font-family="sans-serif">2–3W, 4Ω–8Ω</text>
+      <text x="710" y="174" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">40–70mm diameter</text>
+
+      <!-- MAX98357 → Speaker -->
+      <line x1="600" y1="155" x2="660" y2="155" stroke="#55dd88" stroke-width="2" marker-end="url(#arrow-audio)"/>
+
+      <!-- === SD CARD === -->
+      <rect x="460" y="240" width="140" height="70" rx="6" fill="#1a2200" stroke="#88cc88" stroke-width="1.5"/>
+      <text x="530" y="262" fill="#88cc88" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">SD CARD MODULE</text>
+      <text x="530" y="278" fill="#8b949e" font-size="9" text-anchor="middle" font-family="sans-serif">SPI Interface</text>
+      <text x="470" y="296" fill="#e6edf3" font-size="8" font-family="sans-serif">Simpan file audio .mp3/.wav</text>
+
+      <!-- ESP32 SPI → SD Card -->
+      <line x1="400" y1="240" x2="460" y2="270" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="5,2" marker-end="url(#arrow-data)"/>
+      <text x="425" y="250" fill="#55aaff" font-size="8" text-anchor="middle" font-family="sans-serif">SPI</text>
+
+      <!-- === LED INDICATOR === -->
+      <rect x="460" y="340" width="140" height="60" rx="6" fill="#1a1a2e" stroke="#ffaa33" stroke-width="1.5"/>
+      <text x="530" y="362" fill="#ffaa33" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">LED INDIKATOR</text>
+      <text x="470" y="378" fill="#e6edf3" font-size="8" font-family="sans-serif">🔴 Offline  🟢 Online</text>
+      <text x="470" y="391" fill="#8b949e" font-size="8" font-family="sans-serif">🟡 Charging  🔵 Audio</text>
+
+      <!-- ESP32 GPIO → LED -->
+      <line x1="400" y1="290" x2="460" y2="360" stroke="#ffaa33" stroke-width="1.5" marker-end="url(#arrow-ctrl)"/>
+      <text x="420" y="325" fill="#ffaa33" font-size="8" text-anchor="middle" font-family="sans-serif">GPIO</text>
+
+      <!-- === BUTTONS === -->
+      <rect x="220" y="370" width="180" height="60" rx="6" fill="#1e1e10" stroke="#ffaa33" stroke-width="1.5"/>
+      <text x="310" y="392" fill="#ffaa33" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">TOMBOL FISIK</text>
+      <text x="310" y="410" fill="#e6edf3" font-size="9" text-anchor="middle" font-family="sans-serif">Vol+ | Vol- | Power</text>
+      <text x="310" y="422" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">Pull-up 10kΩ ke 3.3V</text>
+
+      <!-- ESP32 → Buttons (bidirectional) -->
+      <line x1="310" y1="340" x2="310" y2="370" stroke="#ffaa33" stroke-width="1.5" marker-end="url(#arrow-ctrl)"/>
+
+      <!-- === WiFi CLOUD === -->
+      <rect x="220" y="40" width="180" height="60" rx="6" fill="#0d1520" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="6,2"/>
+      <text x="310" y="62" fill="#55aaff" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">☁ CLOUD SERVER</text>
+      <text x="310" y="78" fill="#8b949e" font-size="9" text-anchor="middle" font-family="sans-serif">MQTT Broker (NyamPay)</text>
+      <text x="310" y="91" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">Payment Gateway Callback</text>
+
+      <!-- ESP32 WiFi → Cloud (bidirectional) -->
+      <line x1="310" y1="120" x2="310" y2="100" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-data)"/>
+      <text x="320" y="113" fill="#55aaff" font-size="8" font-family="sans-serif">WiFi</text>
+
+      <!-- === POWER RAIL labels === -->
+      <!-- 3.3V rail from ESP32 to peripherals -->
+      <text x="455" y="115" fill="#ff5555" font-size="8" font-family="sans-serif">3.3V/5V</text>
+      <line x1="400" y1="150" x2="460" y2="145" stroke="#ff5555" stroke-width="1" stroke-dasharray="3,2"/>
+
+      <!-- GND bar bottom -->
+      <line x1="20" y1="470" x2="760" y2="470" stroke="#555577" stroke-width="2"/>
+      <text x="390" y="482" fill="#555577" font-size="9" text-anchor="middle" font-family="sans-serif">▬▬▬ GND COMMON BUS ▬▬▬</text>
+      <line x1="80" y1="280" x2="80" y2="470" stroke="#555577" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="310" y1="340" x2="310" y2="470" stroke="#555577" stroke-width="1" stroke-dasharray="3,2" opacity="0.4"/>
+      <line x1="530" y1="310" x2="530" y2="470" stroke="#555577" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="710" y1="190" x2="710" y2="470" stroke="#555577" stroke-width="1" stroke-dasharray="3,2"/>
+
+      <!-- V1 note -->
+      <rect x="460" y="430" width="300" height="32" rx="4" fill="#1a1020" stroke="#f0a500" stroke-width="1"/>
+      <text x="470" y="445" fill="#f0a500" font-size="8" font-family="sans-serif" font-weight="bold">V2.0 UPGRADE:</text>
+      <text x="470" y="457" fill="#8b949e" font-size="8" font-family="sans-serif">Ganti ESP8266 → ESP32-S3, tambah DAC eksternal PCM5102</text>
+    </svg>
+  </div>
+
+  <div class="note-box ok">
+    <strong>Arsitektur Utama:</strong> ESP32 sebagai otak utama menerima notifikasi dari server NyamPay via WiFi/MQTT, kemudian memutar file audio (.mp3/.wav) yang tersimpan di SD Card melalui amplifier I2S MAX98357A ke speaker.
+  </div>
+</div>
+
+<!-- TAB 2: Schematic Detail -->
+<div id="tab-schematic" class="tab-panel">
+  <div class="diagram-wrap">
+    <svg width="780" height="580" viewBox="0 0 780 580">
+      <rect width="780" height="580" fill="#161b22"/>
+
+      <!-- Title -->
+      <text x="390" y="20" fill="#8b949e" font-size="11" text-anchor="middle" font-family="sans-serif">SKEMA DETAIL KONEKSI ANTAR KOMPONEN</text>
+
+      <!-- ===== ESP32 CHIP ===== -->
+      <rect x="280" y="40" width="220" height="300" rx="6" fill="#0d1a28" stroke="#55aaff" stroke-width="2"/>
+      <text x="390" y="62" fill="#55aaff" font-size="12" text-anchor="middle" font-family="sans-serif" font-weight="bold">ESP32 / ESP8266</text>
+      <text x="390" y="76" fill="#8b949e" font-size="9" text-anchor="middle" font-family="sans-serif">Microcontroller Unit</text>
+
+      <!-- Left pins ESP32 -->
+      <text x="290" y="105" fill="#ff5555" font-size="9" font-family="Courier New">3V3 ●</text>
+      <text x="290" y="125" fill="#555577" font-size="9" font-family="Courier New">GND ●</text>
+      <text x="290" y="145" fill="#55dd88" font-size="9" font-family="Courier New">I2S_BCK ●</text>
+      <text x="290" y="165" fill="#55dd88" font-size="9" font-family="Courier New">I2S_WS ●</text>
+      <text x="290" y="185" fill="#55dd88" font-size="9" font-family="Courier New">I2S_DATA ●</text>
+      <text x="290" y="205" fill="#55aaff" font-size="9" font-family="Courier New">SPI_MOSI ●</text>
+      <text x="290" y="225" fill="#55aaff" font-size="9" font-family="Courier New">SPI_MISO ●</text>
+      <text x="290" y="245" fill="#55aaff" font-size="9" font-family="Courier New">SPI_CLK ●</text>
+      <text x="290" y="265" fill="#55aaff" font-size="9" font-family="Courier New">SPI_CS ●</text>
+
+      <!-- Right pins ESP32 -->
+      <text x="430" y="105" fill="#ffaa33" font-size="9" text-anchor="end" font-family="Courier New">● GPIO2</text>
+      <text x="430" y="125" fill="#ffaa33" font-size="9" text-anchor="end" font-family="Courier New">● GPIO4</text>
+      <text x="430" y="145" fill="#ffaa33" font-size="9" text-anchor="end" font-family="Courier New">● GPIO34</text>
+      <text x="430" y="165" fill="#ffaa33" font-size="9" text-anchor="end" font-family="Courier New">● GPIO35</text>
+      <text x="430" y="185" fill="#ffaa33" font-size="9" text-anchor="end" font-family="Courier New">● GPIO32</text>
+      <text x="430" y="205" fill="#ff5555" font-size="9" text-anchor="end" font-family="Courier New">● VIN 5V</text>
+      <text x="430" y="225" fill="#555577" font-size="9" text-anchor="end" font-family="Courier New">● GND</text>
+      <text x="430" y="280" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">Built-in WiFi Antenna</text>
+      <text x="430" y="293" fill="#55aaff" font-size="8" text-anchor="middle" font-family="sans-serif">MQTT / HTTP / OTA</text>
+      <text x="430" y="306" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">∿∿∿∿∿∿∿∿∿∿∿∿∿</text>
+
+      <!-- ===== MAX98357A ===== -->
+      <rect x="560" y="100" width="160" height="120" rx="6" fill="#0d2c1a" stroke="#55dd88" stroke-width="1.5"/>
+      <text x="640" y="122" fill="#55dd88" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">MAX98357A</text>
+      <text x="640" y="136" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">I2S Amplifier 3W</text>
+      <text x="568" y="155" fill="#55dd88" font-size="8" font-family="Courier New">● BCLK</text>
+      <text x="568" y="170" fill="#55dd88" font-size="8" font-family="Courier New">● LRC</text>
+      <text x="568" y="185" fill="#55dd88" font-size="8" font-family="Courier New">● DIN</text>
+      <text x="568" y="200" fill="#ff5555" font-size="8" font-family="Courier New">● VDD (5V)</text>
+      <text x="568" y="215" fill="#555577" font-size="8" font-family="Courier New">● GND</text>
+      <text x="700" y="160" fill="#55dd88" font-size="8" text-anchor="end" font-family="Courier New">OUT+ ●</text>
+      <text x="700" y="175" fill="#55dd88" font-size="8" text-anchor="end" font-family="Courier New">OUT- ●</text>
+
+      <!-- ESP32 I2S → MAX98357 wires -->
+      <line x1="280" y1="144" x2="200" y2="144" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="200" y1="144" x2="200" y2="154" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="200" y1="154" x2="560" y2="154" stroke="#55dd88" stroke-width="1.5" marker-end="url(#arrow-audio)"/>
+
+      <line x1="280" y1="164" x2="195" y2="164" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="195" y1="164" x2="195" y2="169" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="195" y1="169" x2="560" y2="169" stroke="#55dd88" stroke-width="1.5" marker-end="url(#arrow-audio)"/>
+
+      <line x1="280" y1="184" x2="190" y2="184" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="190" y1="184" x2="190" y2="184" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="190" y1="184" x2="560" y2="184" stroke="#55dd88" stroke-width="1.5" marker-end="url(#arrow-audio)"/>
+
+      <!-- ===== SPEAKER ===== -->
+      <rect x="560" y="245" width="160" height="60" rx="6" fill="#0a2a18" stroke="#55dd88" stroke-width="1.5"/>
+      <text x="640" y="268" fill="#55dd88" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">SPEAKER 3W 4Ω</text>
+      <text x="640" y="283" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">40–70mm</text>
+      <text x="568" y="295" fill="#55dd88" font-size="8" font-family="Courier New">● + (OUT+)</text>
+      <text x="700" y="295" fill="#55dd88" font-size="8" text-anchor="end" font-family="Courier New">- (OUT-) ●</text>
+
+      <!-- MAX98357 OUT → Speaker -->
+      <line x1="720" y1="160" x2="730" y2="160" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="730" y1="160" x2="730" y2="274" stroke="#55dd88" stroke-width="1.5"/>
+      <line x1="730" y1="274" x2="720" y2="274" stroke="#55dd88" stroke-width="1.5" marker-end="url(#arrow-audio)"/>
+
+      <line x1="720" y1="175" x2="735" y2="175" stroke="#55dd88" stroke-width="1"/>
+      <line x1="735" y1="175" x2="735" y2="290" stroke="#55dd88" stroke-width="1"/>
+      <line x1="735" y1="290" x2="720" y2="290" stroke="#55dd88" stroke-width="1"/>
+
+      <!-- ===== SD CARD MODULE ===== -->
+      <rect x="560" y="330" width="160" height="110" rx="6" fill="#141f00" stroke="#88cc88" stroke-width="1.5"/>
+      <text x="640" y="352" fill="#88cc88" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">SD CARD MODULE</text>
+      <text x="640" y="366" fill="#8b949e" font-size="8" text-anchor="middle" font-family="sans-serif">SPI Mode</text>
+      <text x="568" y="383" fill="#55aaff" font-size="8" font-family="Courier New">● MOSI</text>
+      <text x="568" y="398" fill="#55aaff" font-size="8" font-family="Courier New">● MISO</text>
+      <text x="568" y="413" fill="#55aaff" font-size="8" font-family="Courier New">● CLK</text>
+      <text x="568" y="428" fill="#55aaff" font-size="8" font-family="Courier New">● CS</text>
+
+      <!-- ESP32 SPI → SD Card wires -->
+      <line x1="280" y1="204" x2="185" y2="204" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="185" y1="204" x2="185" y2="382" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="185" y1="382" x2="560" y2="382" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-data)"/>
+
+      <line x1="280" y1="244" x2="178" y2="244" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="178" y1="244" x2="178" y2="412" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="178" y1="412" x2="560" y2="412" stroke="#55aaff" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-data)"/>
+
+      <!-- ===== LED INDICATOR ===== -->
+      <rect x="60" y="40" width="150" height="140" rx="6" fill="#1a1a10" stroke="#ffaa33" stroke-width="1.5"/>
+      <text x="135" y="62" fill="#ffaa33" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">LED INDIKATOR</text>
+      <text x="75" y="82" fill="#e6edf3" font-size="8" font-family="sans-serif">LED1 🟢 Status</text>
+      <text x="75" y="97" fill="#8b949e" font-size="7" font-family="sans-serif"> GPIO2 → R 220Ω → LED → GND</text>
+      <text x="75" y="115" fill="#e6edf3" font-size="8" font-family="sans-serif">LED2 🔴 Offline</text>
+      <text x="75" y="130" fill="#8b949e" font-size="7" font-family="sans-serif"> GPIO4 → R 220Ω → LED → GND</text>
+      <text x="75" y="148" fill="#e6edf3" font-size="8" font-family="sans-serif">LED3 🟡 Charging</text>
+      <text x="75" y="163" fill="#8b949e" font-size="7" font-family="sans-serif"> GPIO32→ R 220Ω → LED → GND</text>
+
+      <!-- ESP32 GPIO → LED wires -->
+      <line x1="280" y1="104" x2="260" y2="104" stroke="#ffaa33" stroke-width="1.5"/>
+      <line x1="260" y1="104" x2="260" y2="82" stroke="#ffaa33" stroke-width="1.5"/>
+      <line x1="260" y1="82" x2="210" y2="82" stroke="#ffaa33" stroke-width="1.5" marker-end="url(#arrow-ctrl)"/>
+
+      <line x1="280" y1="124" x2="260" y2="124" stroke="#ffaa33" stroke-width="1.5"/>
+      <line x1="260" y1="124" x2="258" y2="115" stroke="#ffaa33" stroke-width="1.5" marker-end="url(#arrow-ctrl)"/>
+
+      <!-- ===== BUTTONS ===== -->
+      <rect x="60" y="210" width="150" height="140" rx="6" fill="#161000" stroke="#ffaa33" stroke-width="1.5"/>
+      <text x="135" y="232" fill="#ffaa33" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">TOMBOL FISIK</text>
+      <text x="75" y="252" fill="#e6edf3" font-size="8" font-family="sans-serif">SW1 — Vol+</text>
+      <text x="75" y="266" fill="#8b949e" font-size="7" font-family="sans-serif"> 3.3V → 10kΩ → GPIO34</text>
+      <text x="75" y="266" fill="#8b949e" font-size="7" font-family="sans-serif"> 3.3V → 10kΩ → GPIO34</text>
+      <text x="75" y="283" fill="#e6edf3" font-size="8" font-family="sans-serif">SW2 — Vol-</text>
+      <text x="75" y="297" fill="#8b949e" font-size="7" font-family="sans-serif"> 3.3V → 10kΩ → GPIO35</text>
+      <text x="75" y="314" fill="#e6edf3" font-size="8" font-family="sans-serif">SW3 — Power / Reset</text>
+      <text x="75" y="328" fill="#8b949e" font-size="7" font-family="sans-serif"> Terhubung ke EN pin ESP32</text>
+      <text x="75" y="340" fill="#8b949e" font-size="7" font-family="sans-serif"> + kapasitor 0.1µF debounce</text>
+
+      <!-- ESP32 GPIO → Buttons wires -->
+      <line x1="280" y1="144" x2="265" y2="144" stroke="#ffaa33" stroke-width="1"/>
+      <line x1="265" y1="144" x2="265" y2="252" stroke="#ffaa33" stroke-width="1" marker-end="url(#arrow-ctrl)"/>
+
+      <!-- ===== POWER SECTION ===== -->
+      <rect x="60" y="380" width="200" height="140" rx="6" fill="#1a0808" stroke="#ff5555" stroke-width="1.5"/>
+      <text x="160" y="402" fill="#ff5555" font-size="10" text-anchor="middle" font-family="sans-serif" font-weight="bold">POWER MANAGEMENT</text>
+      <text x="75" y="422" fill="#e6edf3" font-size="8" font-family="sans-serif">Baterai Li-Ion 3.7V 2000mAh</text>
+      <text x="75" y="437" fill="#e6edf3" font-size="8" font-family="sans-serif">TP4056 — BMS + Charger 1A</text>
+      <text x="75" y="452" fill="#8b949e" font-size="7" font-family="sans-serif"> USB-C → TP4056 → Li-Ion</text>
+      <text x="75" y="467" fill="#e6edf3" font-size="8" font-family="sans-serif">MT3608 — Boost 3.7V→5V</text>
+      <text x="75" y="482" fill="#8b949e" font-size="7" font-family="sans-serif"> 5V → VIN ESP32 + MAX98357</text>
+      <text x="75" y="497" fill="#8b949e" font-size="7" font-family="sans-serif"> 3.3V dari regulator ESP32</text>
+      <text x="75" y="510" fill="#8b949e" font-size="7" font-family="sans-serif"> 100µF cap filter pada rail power</text>
+
+      <!-- GND Bus -->
+      <line x1="60" y1="555" x2="720" y2="555" stroke="#555577" stroke-width="2"/>
+      <text x="390" y="570" fill="#555577" font-size="9" text-anchor="middle" font-family="sans-serif">══════ GND COMMON BUS ══════</text>
+    </svg>
+  </div>
+
+  <div class="note-box">
+    <strong>⚠ Pull-up Resistor:</strong> Semua tombol menggunakan pull-up 10kΩ ke 3.3V. Pin GPIO ESP32 dikonfigurasi sebagai INPUT (bukan INPUT_PULLUP internal) agar lebih stabil di lingkungan dengan noise listrik tinggi.
+  </div>
+</div>
+
+<!-- TAB 3: Pin Connection Table -->
+<div id="tab-pinout" class="tab-panel">
+  <section-title>Tabel Koneksi Lengkap</section-title>
+  <table class="pin-full-table">
+    <thead>
+      <tr>
+        <th>Pin ESP32</th>
+        <th>GPIO</th>
+        <th>Terhubung ke</th>
+        <th>Fungsi</th>
+        <th>Tipe</th>
+        <th>Catatan</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>VIN</td><td>—</td><td>MT3608 OUT (5V)</td><td>Power Supply Utama</td><td><span class="tag tag-pwr">PWR 5V</span></td><td>Lewat dioda proteksi</td>
+      </tr>
+      <tr>
+        <td>3V3</td><td>—</td><td>Pull-up resistors, LED VCC</td><td>Tegangan referensi 3.3V</td><td><span class="tag tag-pwr">PWR 3.3V</span></td><td>Max 500mA dari regulator onboard</td>
+      </tr>
+      <tr>
+        <td>GND</td><td>—</td><td>Common GND Bus</td><td>Ground</td><td><span class="tag tag-gnd">GND</span></td><td>Hubungkan semua GND di satu titik</td>
+      </tr>
+      <tr>
+        <td>GPIO25</td><td>25</td><td>MAX98357A — BCLK</td><td>I2S Bit Clock</td><td><span class="tag tag-audio">I2S</span></td><td>Frekuensi clock audio</td>
+      </tr>
+      <tr>
+        <td>GPIO26</td><td>26</td><td>MAX98357A — LRC/WS</td><td>I2S Word Select</td><td><span class="tag tag-audio">I2S</span></td><td>Left/Right channel selector</td>
+      </tr>
+      <tr>
+        <td>GPIO22</td><td>22</td><td>MAX98357A — DIN</td><td>I2S Data Out</td><td><span class="tag tag-audio">I2S</span></td><td>Data audio digital ke amplifier</td>
+      </tr>
+      <tr>
+        <td>GPIO23</td><td>23</td><td>SD Card — MOSI</td><td>SPI Master Out</td><td><span class="tag tag-data">SPI</span></td><td>Kirim data ke SD card</td>
+      </tr>
+      <tr>
+        <td>GPIO19</td><td>19</td><td>SD Card — MISO</td><td>SPI Master In</td><td><span class="tag tag-data">SPI</span></td><td>Terima data dari SD card</td>
+      </tr>
+      <tr>
+        <td>GPIO18</td><td>18</td><td>SD Card — CLK</td><td>SPI Clock</td><td><span class="tag tag-data">SPI</span></td><td>Clock sinkronisasi SPI</td>
+      </tr>
+      <tr>
+        <td>GPIO5</td><td>5</td><td>SD Card — CS</td><td>SPI Chip Select</td><td><span class="tag tag-data">SPI</span></td><td>Active LOW</td>
+      </tr>
+      <tr>
+        <td>GPIO2</td><td>2</td><td>LED Hijau (Status WiFi)</td><td>Indikator Online/Offline</td><td><span class="tag tag-gpio">GPIO OUT</span></td><td>220Ω seri ke GND; HIGH=ON</td>
+      </tr>
+      <tr>
+        <td>GPIO4</td><td>4</td><td>LED Merah (Error)</td><td>Indikator Koneksi Gagal</td><td><span class="tag tag-gpio">GPIO OUT</span></td><td>220Ω seri ke GND</td>
+      </tr>
+      <tr>
+        <td>GPIO32</td><td>32</td><td>LED Kuning (Charging)</td><td>Indikator Baterai Isi</td><td><span class="tag tag-gpio">GPIO OUT</span></td><td>Sinyal dari TP4056 CHRG pin</td>
+      </tr>
+      <tr>
+        <td>GPIO34</td><td>34</td><td>Tombol Vol+ (SW1)</td><td>Naikkan volume</td><td><span class="tag tag-ctrl">GPIO IN</span></td><td>Pull-up 10kΩ; input-only pin</td>
+      </tr>
+      <tr>
+        <td>GPIO35</td><td>35</td><td>Tombol Vol- (SW2)</td><td>Turunkan volume</td><td><span class="tag tag-ctrl">GPIO IN</span></td><td>Pull-up 10kΩ; input-only pin</td>
+      </tr>
+      <tr>
+        <td>EN</td><td>—</td><td>Tombol Power (SW3)</td><td>Reset / Power Toggle</td><td><span class="tag tag-ctrl">ENABLE</span></td><td>LOW = reset; kapasitor 0.1µF</td>
+      </tr>
+      <tr>
+        <td>Built-in</td><td>—</td><td>Router WiFi / Hotspot</td><td>Koneksi Internet</td><td><span class="tag tag-data">WiFi</span></td><td>2.4GHz b/g/n; MQTT ke server</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br/>
+  <section-title>Koneksi Power Management</section-title>
+  <table class="pin-full-table">
+    <thead>
+      <tr><th>Komponen</th><th>Pin</th><th>Terhubung ke</th><th>Nilai</th><th>Fungsi</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>USB-C / Micro-USB</td><td>VBUS (5V)</td><td>TP4056 IN+</td><td>5V 1A</td><td>Input charger dari adaptor</td></tr>
+      <tr><td>TP4056</td><td>BAT+</td><td>Li-Ion (+)</td><td>4.2V max</td><td>Charge baterai via BMS</td></tr>
+      <tr><td>TP4056</td><td>OUT+</td><td>MT3608 IN+</td><td>3.7V</td><td>Output ke boost converter</td></tr>
+      <tr><td>TP4056</td><td>CHRG</td><td>GPIO32 (LED Kuning)</td><td>LOW saat charging</td><td>Sinyal status pengisian</td></tr>
+      <tr><td>MT3608</td><td>OUT+</td><td>VIN ESP32, VDD MAX98357</td><td>5V regulated</td><td>Supply utama semua komponen</td></tr>
+      <tr><td>Kapasitor</td><td>—</td><td>Parallel rail 5V & 3.3V</td><td>100µF + 0.1µF</td><td>Filter noise & stabilisasi power</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- TAB 4: BOM -->
+<div id="tab-bom" class="tab-panel">
+  <section-title>Bill of Materials (BOM) — Per Unit Soundbox</section-title>
+  <table class="pin-full-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Komponen</th>
+        <th>Spesifikasi / Model</th>
+        <th>Qty</th>
+        <th>Est. Harga</th>
+        <th>Sumber</th>
+        <th>Keterangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td><td><b>Mikrokontroler</b></td><td>ESP32-WROOM-32 / ESP8266 NodeMCU</td><td>1</td><td>Rp 25.000–45.000</td><td>Tokopedia / Shopee</td><td>ESP32 direkomendasikan (dual core, I2S native)</td>
+      </tr>
+      <tr>
+        <td>2</td><td><b>Audio Amplifier</b></td><td>MAX98357A I2S Class D Module</td><td>1</td><td>Rp 15.000–25.000</td><td>Tokopedia</td><td>Alternatif: PAM8403 (analog, butuh DAC)</td>
+      </tr>
+      <tr>
+        <td>3</td><td><b>Speaker</b></td><td>3W 4Ω, diameter 40–70mm</td><td>1</td><td>Rp 8.000–15.000</td><td>Lokal / Glodok</td><td>Diameter disesuaikan ukuran casing</td>
+      </tr>
+      <tr>
+        <td>4</td><td><b>SD Card Module</b></td><td>MicroSD SPI Module + kartu 4–8GB</td><td>1</td><td>Rp 8.000–12.000</td><td>Tokopedia</td><td>Simpan file audio .mp3 / .wav</td>
+      </tr>
+      <tr>
+        <td>5</td><td><b>Baterai</b></td><td>Li-Ion 18650, 3.7V, 2000–3000mAh</td><td>1–2</td><td>Rp 20.000–35.000</td><td>Toko baterai lokal</td><td>2 cell seri = 7.4V jika butuh daya lebih</td>
+      </tr>
+      <tr>
+        <td>6</td><td><b>BMS Charger</b></td><td>TP4056 dengan proteksi overcharge</td><td>1</td><td>Rp 3.000–5.000</td><td>Tokopedia</td><td>Wajib ada proteksi over-discharge</td>
+      </tr>
+      <tr>
+        <td>7</td><td><b>Boost Converter</b></td><td>MT3608, output adjustable 5V</td><td>1</td><td>Rp 5.000–8.000</td><td>Tokopedia</td><td>Set output 5V dengan trimpot</td>
+      </tr>
+      <tr>
+        <td>8</td><td><b>LED Indikator</b></td><td>LED 5mm: Hijau, Merah, Kuning</td><td>3</td><td>Rp 500–1.000</td><td>Lokal</td><td>—</td>
+      </tr>
+      <tr>
+        <td>9</td><td><b>Resistor LED</b></td><td>220Ω, 1/4W</td><td>3</td><td>Rp 100</td><td>Lokal</td><td>Pembatas arus LED</td>
+      </tr>
+      <tr>
+        <td>10</td><td><b>Resistor Pull-up</b></td><td>10kΩ, 1/4W</td><td>3</td><td>Rp 300</td><td>Lokal</td><td>Untuk tombol SW1, SW2, SW3</td>
+      </tr>
+      <tr>
+        <td>11</td><td><b>Kapasitor Filter</b></td><td>100µF 16V + 0.1µF ceramic</td><td>2–4</td><td>Rp 1.000–2.000</td><td>Lokal</td><td>Stabilisasi tegangan power rail</td>
+      </tr>
+      <tr>
+        <td>12</td><td><b>Tombol (Push Button)</b></td><td>Tactile switch 6×6mm</td><td>3</td><td>Rp 1.000–2.000</td><td>Lokal</td><td>Vol+, Vol-, Power</td>
+      </tr>
+      <tr>
+        <td>13</td><td><b>Konektor USB</b></td><td>USB-C atau Micro-USB female port</td><td>1</td><td>Rp 3.000–5.000</td><td>Lokal</td><td>Port pengisian baterai</td>
+      </tr>
+      <tr>
+        <td>14</td><td><b>PCB / Protoboard</b></td><td>PCB custom atau universal board</td><td>1</td><td>Rp 5.000–20.000</td><td>JLCPCB / Tokopedia</td><td>V2.0: gunakan PCB custom order</td>
+      </tr>
+      <tr>
+        <td>15</td><td><b>Casing</b></td><td>3D print PLA/PETG, desain custom</td><td>1</td><td>Rp 15.000–30.000</td><td>Produksi mandiri</td><td>Tahan banting, lubang speaker & LED</td>
+      </tr>
+      <tr>
+        <td>16</td><td><b>Kabel & Konektor</b></td><td>Jumper wire, JST connector</td><td>—</td><td>Rp 5.000</td><td>Lokal</td><td>Internal wiring</td>
+      </tr>
+      <tr>
+        <td colspan="4" style="text-align:right; font-weight:bold; color:#e6edf3; font-family:sans-serif;">Total Estimasi HPP per Unit</td>
+        <td style="color:#00d9a6; font-weight:bold; font-family:sans-serif;">Rp 115.000–205.000</td>
+        <td colspan="2" style="color:#8b949e; font-family:sans-serif; font-size:10px;">Target V2.0: efisiensi ke &lt; Rp 100K</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br/>
+  <div class="note-box ok">
+    <strong>💡 Tips Efisiensi V2.0:</strong> Gunakan modul ESP32-S3 mini untuk ukuran lebih kecil. Ganti MAX98357A dengan PAM8302 jika I2S terlalu kompleks. Order PCB custom via JLCPCB bisa tekan biaya PCB + soldering 50%. Beli komponen pasif (resistor, kapasitor) dalam pack 100pcs untuk harga lebih murah.
+  </div>
+</div>
+
+<!-- TAB 5: Technical Notes -->
+<div id="tab-notes" class="tab-panel">
+  <section-title>Alur Kerja Firmware (Logic Flow)</section-title>
+
+  <div class="diagram-wrap" style="font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.8; color: #e6edf3; white-space: pre;">
+<span style="color:#55aaff">[ BOOT ]</span>
+    │
+    ▼
+<span style="color:#e6edf3">Inisialisasi GPIO, I2S, SPI, SD Card</span>
+    │
+    ▼
+<span style="color:#55aaff">[ KONEKSI WiFi ]</span> ──── Gagal? ──► <span style="color:#ff5555">LED Merah ON</span> ──► Retry setiap 30 detik
+    │ Berhasil
+    ▼
+<span style="color:#55aaff">[ KONEKSI MQTT BROKER ]</span>
+    │ Subscribe ke topic: <span style="color:#ffaa33">nyampay/{merchant_id}/payment</span>
+    ▼
+<span style="color:#55dd88">LED Hijau ON</span> — Status: Siap
+    │
+    ▼ (loop utama)
+<span style="color:#55aaff">[ TUNGGU PESAN MQTT ]</span>
+    │
+    │ Ada pesan masuk?
+    ▼
+<span style="color:#e6edf3">Parse JSON payload:</span>
+    <span style="color:#8b949e">{ "amount": 10000, "currency": "IDR", "merchant": "xxx" }</span>
+    │
+    ▼
+<span style="color:#e6edf3">Convert amount → nama file audio</span>
+    <span style="color:#8b949e">10000 → "10ribu.mp3"</span>
+    <span style="color:#8b949e">25500 → "25ribu_500.mp3" (atau TTS)</span>
+    │
+    ▼
+<span style="color:#55dd88">Putar audio dari SD Card via I2S → MAX98357 → Speaker</span>
+    │
+    ▼
+<span style="color:#55aaff">[ Kembali ke loop tunggu ]</span>
+
+<span style="color:#ffaa33">── Thread paralel: Monitor tombol Vol+/Vol- ──</span>
+<span style="color:#ffaa33">── Thread paralel: Monitor status WiFi & MQTT reconnect ──</span>
+<span style="color:#ffaa33">── Thread paralel: Monitor baterai (ADC pin) ──</span>
+  </div>
+
+  <section-title>Struktur File Audio di SD Card</section-title>
+  <div class="diagram-wrap" style="font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.8; color: #e6edf3; white-space: pre;">
+<span style="color:#55aaff">SD:/</span>
+├── <span style="color:#55dd88">intro.mp3</span>         → "NyamPay aktif"
+├── <span style="color:#55dd88">prefix.mp3</span>        → "NyamPay,"
+├── <span style="color:#55dd88">suffix.mp3</span>        → "diterima"
+├── <span style="color:#88cc88">numbers/</span>
+│   ├── 1ribu.mp3       → "Satu Ribu"
+│   ├── 2ribu.mp3       → "Dua Ribu"
+│   ├── 5ribu.mp3       → "Lima Ribu"
+│   ├── 10ribu.mp3      → "Sepuluh Ribu"
+│   ├── 20ribu.mp3      → "Dua Puluh Ribu"
+│   ├── 50ribu.mp3      → "Lima Puluh Ribu"
+│   ├── 100ribu.mp3     → "Seratus Ribu"
+│   └── ...             (semua denominasi umum)
+└── <span style="color:#55dd88">error.mp3</span>         → "Koneksi bermasalah"
+
+<span style="color:#8b949e">Strategi TTS: Gabungkan file audio prefix + angka + suffix</span>
+<span style="color:#8b949e">Contoh Rp 25.000 = prefix + "25ribu" + suffix</span>
+<span style="color:#8b949e">Format: MP3 128kbps atau WAV 16kHz 16bit (lebih cepat decode)</span>
+  </div>
+
+  <section-title>Library Arduino / ESP-IDF yang Digunakan</section-title>
+  <table class="pin-full-table">
+    <thead><tr><th>Library</th><th>Fungsi</th><th>Platform</th></tr></thead>
+    <tbody>
+      <tr><td>Arduino ESP32 Core</td><td>Framework utama, WiFi, GPIO</td><td>Arduino IDE / PlatformIO</td></tr>
+      <tr><td>PubSubClient</td><td>MQTT client (publish/subscribe)</td><td>Arduino</td></tr>
+      <tr><td>ESP32-audioI2S</td><td>Decode MP3/WAV, output via I2S</td><td>Arduino ESP32</td></tr>
+      <tr><td>SD.h / SD_MMC.h</td><td>Baca file dari MicroSD via SPI</td><td>Arduino ESP32</td></tr>
+      <tr><td>ArduinoJson</td><td>Parse JSON dari MQTT payload</td><td>Arduino</td></tr>
+      <tr><td>WiFiManager</td><td>Provisioning WiFi via AP mode</td><td>Arduino ESP32</td></tr>
+      <tr><td>esp_adc_cal.h</td><td>Baca level baterai via ADC</td><td>ESP-IDF / Arduino</td></tr>
+    </tbody>
+  </table>
+
+  <br/>
+  <div class="note-box info">
+    <strong>📶 Provisioning WiFi Merchant Baru:</strong> Gunakan WiFiManager — saat pertama kali aktif, ESP32 membuka Access Point "NyamPay-Setup". Merchant buka HP, connect ke AP tersebut, masukkan nama WiFi & password toko. Konfigurasi tersimpan di flash ESP32.
+  </div>
+  <div class="note-box">
+    <strong>⚠ Keamanan MQTT:</strong> Gunakan TLS/SSL untuk koneksi MQTT (port 8883). Setiap device memiliki client_id unik dan token autentikasi. Payload transaksi divalidasi dengan HMAC signature dari server agar tidak bisa dipalsukan.
+  </div>
+  <div class="note-box ok">
+    <strong>✅ OTA Update:</strong> Firmware dapat diperbarui secara over-the-air dari server NyamPay tanpa perlu kabel. Ini penting untuk perbaikan bug dan penambahan fitur tanpa harus kunjungi tiap merchant.
+  </div>
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
